@@ -1,10 +1,10 @@
 // create level object to hold brick and ball objects
 var LevelConstruct = function(){
   return [
-    [ ['Player',200,550,250,65,15,'red',0],
-    ['Inert',50,0,50,98,23,'#ff00ff',100, "extraLife"],
-
-    ],
+    [
+      ['Player',200,550,250,65,15,'red',0],
+      ['Inert',100,0,300,500,100,'white',10, ""],
+    ]
   ];
 }
 

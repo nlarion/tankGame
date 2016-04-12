@@ -53,7 +53,7 @@ Game.prototype.gameManager = function(){
       t.getKeyPress = e;
       t.getOtherKeyPress = e;
     });
-    this.appState = STATE_INIT;
+    this.appState = STATE_PLAYING;
     break;
   case STATE_RESET:
     resetApp(); //doesn't exist yet
@@ -79,7 +79,7 @@ Game.prototype.gameManager = function(){
 
 Game.prototype.renderCharlee = function(){
   if(this.getOtherKeyPress){
-    console.log(this.getOtherKeyPress);
+    //console.log(this.getOtherKeyPress);
     //console.log(this.currentCharlee);
     switch (this.getOtherKeyPress.keyCode) {
 
@@ -140,13 +140,6 @@ Game.prototype.renderCharlee = function(){
 				}
  			break;
   			case 'upstop':
- 				this.currentCharlee.frameIndex=3;
-				GetKeyCodeVar=0;
- 			break;
-      case 32:
-				this.currentLevel.makeBall(this.currentCharlee.x, this.currentCharlee.y);
- 			break;
-  			case 'fire':
  				this.currentCharlee.frameIndex=3;
 				GetKeyCodeVar=0;
  			break;
@@ -227,6 +220,8 @@ Game.prototype.clearCanvasAndDisplayDetails = function(){
   this.c.fillRect(0,0,canvas.width,canvas.height);
   this.c.font = "12px serif";
   this.c.fillStyle = "white";
+  this.c.fillText ("Level: "+this.level, 20, 20);
+  this.c.fillText ("Score: " + this.currentPlayer.score, canvas.width-65, 20);
   this.c.fillText ("Lives: ", 20, canvas.height - 20);
   this.c.fillText ("sourceX: "+this.currentCharlee.sourceX+" FrameIndex: "+ this.currentCharlee.frameIndex, canvas.width-170,canvas.height -20);
   this.c.fillText ("MathFloor: "+Math.floor(this.currentCharlee.animationFrames[this.currentCharlee.frameIndex] % 12)+" animation frame: "+ this.currentCharlee.animationFrames[this.currentCharlee.frameIndex], canvas.width-170,canvas.height -50);
@@ -254,11 +249,7 @@ Game.prototype.initApp = function(){
   this.c.strokeRect(1, 1, canvas.width - 2, canvas.height - 2);
   this.c.font = " "+ canvas.width / 10 + "px serif";
   this.c.fillStyle = "#" + this.introCount + "";
-<<<<<<< HEAD
-  this.c.fillText ("Tanks",canvas.width / 3, canvas.height / 2);
-=======
   this.c.fillText ("Tank",canvas.width / 3, canvas.height / 2);
->>>>>>> 63c820aad4b95b77128dcb8dbdf0303402e65158
   if(this.introCount<150){
     this.introCount++;
   }else{
@@ -356,31 +347,34 @@ Game.prototype.collide = function(){
   for(var i=0; i < this.currentLevel.bricks.length; i++){
     if(this.checkCollision(this.currentCharlee, this.currentLevel.bricks[i])){
       console.log('collision');
-      //stuff
+      var tankY = this.currentCharlee.y;
+      var tankX = this.currentCharlee.x;
+      var tankW = this.currentCharlee.w;
+      var tankH = this.currentCharlee.h;
+
+      var brickY = this.currentLevel.bricks[i].y;
+      var brickX = this.currentLevel.bricks[i].x;
+      var brickW = this.currentLevel.bricks[i].w;
+      var brickH = this.currentLevel.bricks[i].h;
+
+      // if ( (this.currentCharlee.y + this.currentCharlee.h > this.currentLevel.bricks[i].y) &&
+      //   (this.currentCharlee.y < this.currentLevel.bricks[i].y + this.currentLevel.bricks[i].h) &&
+      //   ((this.currentCharlee.x + this.currentCharlee.w > this.currentLevel.bricks[i].x) &&
+      //   (this.currentCharlee.x > this.currentLevel.bricks[i].x ) || (this.currentCharlee.x + this.currentCharlee.w < this.currentLevel.bricks[i].x) &&
+      //   (this.currentCharlee.x < this.currentLevel.bricks[i].x)) ) {
+      if ( (tankY + tankH > brickY) && (tankY < brickY + brickH) ){
+        console.log("top");
+
+        this.currentCharlee.y = this.currentCharlee.y+5;
+        //this.currentCharlee.dx = 0;
+        //this.currentCharlee.dy = 0;//+0.5 increases the ball speed every time it hits something.
+        //try and make the ball do something here.
+      } else {
+        console.log("test");
+        this.currentCharlee.x = this.currentCharlee.x+5;
+      }
     }
   }
-
-
-  // for(var k = 0; k < this.currentLevel.powerUp.length; k++){
-  //   if(this.checkCollision(this.currentLevel.powerUp[k],this.currentLevel.bricks[0])){
-  //     this.runPowerUpCollisions(k);
-  //   }
-  // }
-  // for(var l = 0; l < this.currentLevel.projectiles.length; l++) {
-  //   for(var m = 0; m < this.currentLevel.bricks.length; m++) {
-  //     if(this.checkCollision(this.currentLevel.projectiles[l],this.currentLevel.bricks[m]) && this.currentLevel.bricks[m].type !== 'Steady') {
-  //       this.currentLevel.bricks[m].life -= 0.2;
-  //       if(this.currentLevel.bricks[m].life <= 0) {
-  //         this.currentLevel.bricks.splice(m,1);
-  //         if(this.currentLevel.bricks.length === this.currentLevel.winCriteria && this.currentPlayer.lives>0){
-  //           this.handleLevelAdvance();
-  //         }
-  //       }
-  //       this.currentLevel.projectiles.splice(l,1);
-  //       break;
-  //     }
-  //   }
-  // }
 };
 
 Game.prototype.checkCollision = function(thing1,thing2) {
@@ -405,6 +399,7 @@ Game.prototype.testWalls = function(){
       }else {
         this.firstRun = true;
         this.audio.stop();
+        this.appState = STATE_GAMEOVER;
       }
       break;
     }
@@ -432,7 +427,7 @@ Game.prototype.drawRenderBalls = function(){
         this.currentLevel.balls[i].x = (this.currentLevel.bricks[0].x+((this.currentLevel.bricks[0].w/2)-(this.currentLevel.balls[i].w)/2));
         this.c.fillStyle = "blue";
         this.c.beginPath();
-        this.c.arc(this.currentLevel.balls[i].x+(this.currentLevel.balls[i].w/2),this.currentLevel.balls[i].y+(this.currentLevel.balls[i].w/2),this.currentLevel.balls[i].w/2,0,Math.PI*2 ,true);
+        this.c.arc(this.currentLevel.balls[i].x+(this.currentLevel.balls[i].w/2),this.currentLevel.balls[i].y+(this.currentLevel.balls[i].w/2),this.currentLevel.balls[i].w/2,0,Math.PI*2,true);
         this.c.closePath();
         this.c.fill();
       } else {
