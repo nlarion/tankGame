@@ -88,10 +88,10 @@ Game.prototype.renderCharlee = function(){
  				 this.currentCharlee.frameIndex=0;
 				 break;
 			case 100:
-  			this.currentCharlee.sourceX=50;
+  			//this.currentCharlee.sourceX=50;
 				this.currentCharlee.sourceY=0;
 				this.currentCharlee.x=this.currentCharlee.x+this.currentCharlee.dx;
-				if (this.currentCharlee.frameIndex==this.currentCharlee.animationFrames.length-1){
+				if (this.currentCharlee.frameIndex>=this.currentCharlee.animationFrames.length-1){
 					this.currentCharlee.frameIndex=6;
 				} else {
 					this.currentCharlee.frameIndex++;
@@ -102,10 +102,10 @@ Game.prototype.renderCharlee = function(){
 				GetKeyCodeVar=0;
  				break;
  			case 97:
- 				this.currentCharlee.sourceX=50;
+ 				//this.currentCharlee.sourceX=50;
 				this.currentCharlee.sourceY=50;
 				this.currentCharlee.x=this.currentCharlee.x-this.currentCharlee.dx; //horizonal
-				if (this.currentCharlee.frameIndex==this.currentCharlee.animationFrames.length-1){
+				if (this.currentCharlee.frameIndex>=this.currentCharlee.animationFrames.length-1){
 					this.currentCharlee.frameIndex=7;
 				} else {
 					this.currentCharlee.frameIndex++;
@@ -116,10 +116,10 @@ Game.prototype.renderCharlee = function(){
 				GetKeyCodeVar=0;
  			break;
  			case 115:
- 				this.currentCharlee.sourceX=50;
+ 				//this.currentCharlee.sourceX=50;
 				this.currentCharlee.sourceY=100;
 				this.currentCharlee.y=this.currentCharlee.y+this.currentCharlee.dy; //vertical
-				if (this.currentCharlee.frameIndex==this.currentCharlee.animationFrames.length-3){
+				if (this.currentCharlee.frameIndex>=this.currentCharlee.animationFrames.length-3){
 					this.currentCharlee.frameIndex=2;
 				} else {
 					this.currentCharlee.frameIndex++;
@@ -130,10 +130,10 @@ Game.prototype.renderCharlee = function(){
 				GetKeyCodeVar=0;
  			break;
  			case 119:
- 				this.currentCharlee.sourceX=50;
+ 				//this.currentCharlee.sourceX=50;
 				this.currentCharlee.sourceY=100;
 				this.currentCharlee.y=this.currentCharlee.y-this.currentCharlee.dy; //vertical
-				if (this.currentCharlee.frameIndex==this.currentCharlee.animationFrames.length-3){
+				if (this.currentCharlee.frameIndex>=this.currentCharlee.animationFrames.length-3){
 					this.currentCharlee.frameIndex=2;
 				} else {
 					this.currentCharlee.frameIndex++;
@@ -223,7 +223,8 @@ Game.prototype.clearCanvasAndDisplayDetails = function(){
   this.c.fillText ("Level: "+this.level, 20, 20);
   this.c.fillText ("Score: " + this.currentPlayer.score, canvas.width-65, 20);
   this.c.fillText ("Lives: ", 20, canvas.height - 20);
-  this.c.fillText ("sourceX: "+this.currentCharlee.sourceX+" FrameIndex: "+ this.currentCharlee.frameIndex, canvas.width-150,canvas.height -20);
+  this.c.fillText ("sourceX: "+this.currentCharlee.sourceX+" FrameIndex: "+ this.currentCharlee.frameIndex, canvas.width-170,canvas.height -20);
+  this.c.fillText ("MathFloor: "+Math.floor(this.currentCharlee.animationFrames[this.currentCharlee.frameIndex] % 12)+" animation frame: "+ this.currentCharlee.animationFrames[this.currentCharlee.frameIndex], canvas.width-170,canvas.height -50);
   for (var i = 0; i < this.currentPlayer.lives-1; i++) {
     this.c.fillStyle = "blue";
     this.c.beginPath();
