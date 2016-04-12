@@ -53,7 +53,7 @@ Game.prototype.gameManager = function(){
       t.getKeyPress = e;
       t.getOtherKeyPress = e;
     });
-    this.appState = STATE_INIT;
+    this.appState = STATE_PLAYING;
     break;
   case STATE_RESET:
     resetApp(); //doesn't exist yet
@@ -79,7 +79,7 @@ Game.prototype.gameManager = function(){
 
 Game.prototype.renderCharlee = function(){
   if(this.getOtherKeyPress){
-    console.log(this.getOtherKeyPress);
+    //console.log(this.getOtherKeyPress);
     //console.log(this.currentCharlee);
     switch (this.getOtherKeyPress.keyCode) {
 
@@ -347,31 +347,38 @@ Game.prototype.collide = function(){
   for(var i=0; i < this.currentLevel.bricks.length; i++){
     if(this.checkCollision(this.currentCharlee, this.currentLevel.bricks[i])){
       console.log('collision');
-      //stuff
+      var tankY = this.currentCharlee.y;
+      var tankX = this.currentCharlee.x;
+      var tankW = this.currentCharlee.w;
+      var tankH = this.currentCharlee.h;
+
+      var brickY = this.currentLevel.bricks[i].y;
+      var brickX = this.currentLevel.bricks[i].x;
+      var brickW = this.currentLevel.bricks[i].w;
+      var brickH = this.currentLevel.bricks[i].h;
+
+      // if ( (this.currentCharlee.y + this.currentCharlee.h > this.currentLevel.bricks[i].y) &&
+      //   (this.currentCharlee.y < this.currentLevel.bricks[i].y + this.currentLevel.bricks[i].h) &&
+      //   ((this.currentCharlee.x + this.currentCharlee.w > this.currentLevel.bricks[i].x) &&
+      //   (this.currentCharlee.x > this.currentLevel.bricks[i].x ) || (this.currentCharlee.x + this.currentCharlee.w < this.currentLevel.bricks[i].x) &&
+      //   (this.currentCharlee.x < this.currentLevel.bricks[i].x)) ) {
+      if ( (this.currentCharlee.y + this.currentCharlee.h > this.currentLevel.bricks[i].y) &&
+        (this.currentCharlee.y < this.currentLevel.bricks[i].y + this.currentLevel.bricks[i].h) &&
+        ((this.currentCharlee.x + this.currentCharlee.w > this.currentLevel.bricks[i].x) &&
+        (this.currentCharlee.x > this.currentLevel.bricks[i].x ) || (this.currentCharlee.x + this.currentCharlee.w < this.currentLevel.bricks[i].x) &&
+        (this.currentCharlee.x < this.currentLevel.bricks[i].x)) ) {
+        console.log("top");
+
+        this.currentCharlee.y = this.currentCharlee.y+5;
+        //this.currentCharlee.dx = 0;
+        //this.currentCharlee.dy = 0;//+0.5 increases the ball speed every time it hits something.
+        //try and make the ball do something here.
+      } else {
+        console.log("test");
+        this.currentCharlee.x = this.currentCharlee.x+5;
+      }
     }
   }
-
-
-  // for(var k = 0; k < this.currentLevel.powerUp.length; k++){
-  //   if(this.checkCollision(this.currentLevel.powerUp[k],this.currentLevel.bricks[0])){
-  //     this.runPowerUpCollisions(k);
-  //   }
-  // }
-  // for(var l = 0; l < this.currentLevel.projectiles.length; l++) {
-  //   for(var m = 0; m < this.currentLevel.bricks.length; m++) {
-  //     if(this.checkCollision(this.currentLevel.projectiles[l],this.currentLevel.bricks[m]) && this.currentLevel.bricks[m].type !== 'Steady') {
-  //       this.currentLevel.bricks[m].life -= 0.2;
-  //       if(this.currentLevel.bricks[m].life <= 0) {
-  //         this.currentLevel.bricks.splice(m,1);
-  //         if(this.currentLevel.bricks.length === this.currentLevel.winCriteria && this.currentPlayer.lives>0){
-  //           this.handleLevelAdvance();
-  //         }
-  //       }
-  //       this.currentLevel.projectiles.splice(l,1);
-  //       break;
-  //     }
-  //   }
-  // }
 };
 
 Game.prototype.checkCollision = function(thing1,thing2) {
