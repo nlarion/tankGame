@@ -148,8 +148,8 @@ Game.prototype.renderCharlee = function(){
     this.getOtherKeyPress = undefined;
   }
   this.currentCharlee.sourceX=Math.floor(this.currentCharlee.animationFrames[this.currentCharlee.frameIndex] % 7) *32;
-  this.c.drawImage(this.tileSheet, this.currentCharlee.sourceX,this.currentCharlee.sourceY,32,32,this.currentCharlee.x,this.currentCharlee.y,100,100);
-  //this.c.fillRect(this.currentCharlee.y,this.currentCharlee.x,100,100);
+  this.c.drawImage(this.tileSheet, this.currentCharlee.sourceX,this.currentCharlee.sourceY,32,32,this.currentCharlee.x,this.currentCharlee.y,this.currentCharlee.w,this.currentCharlee.h);
+  //this.c.fillRect(this.currentCharlee.x,this.currentCharlee.y,this.currentCharlee.w,this.currentCharlee.h);
 
 }
 
@@ -346,7 +346,7 @@ Game.prototype.collide = function(){
   }
   for(var i=0; i < this.currentLevel.bricks.length; i++){
     if(this.checkCollision(this.currentCharlee, this.currentLevel.bricks[i])){
-      console.log('collision');
+      // console.log('collision');
       var tankY = this.currentCharlee.y;
       var tankX = this.currentCharlee.x;
       var tankW = this.currentCharlee.w;
@@ -356,14 +356,21 @@ Game.prototype.collide = function(){
       var brickX = this.currentLevel.bricks[i].x;
       var brickW = this.currentLevel.bricks[i].w;
       var brickH = this.currentLevel.bricks[i].h;
+      console.log("tanky "+ tankY + " tankx " + tankX + " tankw " + tankW + " tankH " +tankH);
+      console.log("bricky "+ brickY + " brickx " + brickX + " brickw " + parseInt(brickH));
 
       // if ( (this.currentCharlee.y + this.currentCharlee.h > this.currentLevel.bricks[i].y) &&
       //   (this.currentCharlee.y < this.currentLevel.bricks[i].y + this.currentLevel.bricks[i].h) &&
       //   ((this.currentCharlee.x + this.currentCharlee.w > this.currentLevel.bricks[i].x) &&
       //   (this.currentCharlee.x > this.currentLevel.bricks[i].x ) || (this.currentCharlee.x + this.currentCharlee.w < this.currentLevel.bricks[i].x) &&
       //   (this.currentCharlee.x < this.currentLevel.bricks[i].x)) ) {
-      if ( (tankY + tankH > brickY) && (tankY < brickY + brickH) ){
-        console.log("top");
+      if (
+        ( ((tankX > brickX) && (tankX < (brickX + brickW))) || ( ((tankX + tankW) > brickX) && ((tankX + tankW) < (brickX + brickW)) ) )
+        && ( (tankY < (brickY + brickH)) && (tankY > (brickY + (brickH / 2))) )
+
+
+        ){
+        console.log("Im tripping");
 
         this.currentCharlee.y = this.currentCharlee.y+5;
         //this.currentCharlee.dx = 0;
@@ -371,7 +378,7 @@ Game.prototype.collide = function(){
         //try and make the ball do something here.
       } else {
         console.log("test");
-        this.currentCharlee.x = this.currentCharlee.x+5;
+        this.currentCharlee.y = this.currentCharlee.y-5;
       }
     }
   }
