@@ -1,0 +1,12 @@
+<level>
+  <brick type="Player" x="200" y="250" width="40" height="15" color="red"/>
+  <brick type="Inert" x="5" y="0" width="30" height="15" color="red"/>
+  <brick type="Inert" x="55" y="0" width="30" height="15" color="red"/>
+  <brick type="Inert" x="105" y="0" width="30" height="15" color="red"/>
+  <brick type="Inert" x="155" y="0" width="30" height="15" color="red"/>
+  <brick type="Inert" x="205" y="0" width="30" height="15" color="red"/>
+  <brick type="Inert" x="255" y="0" width="30" height="15" color="red"/>
+  <brick type="Inert" x="305" y="0" width="30" height="15" color="red"/>
+  <brick type="Inert" x="355" y="0" width="30" height="15" color="red"/>
+  <ball type="Normal" x="200" y="75" width="10" height="10" velx="3" vely="3" color="white"/>
+</level>
