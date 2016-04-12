@@ -3,7 +3,10 @@ var LevelConstruct = function(){
   return [
     [
       ['Player',200,550,250,65,15,'red',0],
-      ['Inert',100,0,300,500,100,'white',10, ""],
+      ['Inert',475,0,400,50,100,'white',10, ""],
+      ['Inert',475,0,100,50,100,'white',10, ""],
+      ['Inert',250,0,275,100,50,'white',10, ""],
+      ['Inert',650,0,275,100,50,'white',10, ""],
     ]
   ];
 }
@@ -18,12 +21,47 @@ var Level = function(currentLevel) {
   this.projectiles = [];
   this.winCriteria = 0;
   this.getCurrentLevelprops();
-  this.makeBall(394,538);
+  this.makeBall(0,0);
 
 }
 
-Level.prototype.makeBall = function(x,y){
-  var ball = new Ball(x + 50,y + 50,12,12,20,0,"white");
+Level.prototype.makeBall = function(x,y,orientation){
+  var tempVelx = 0;
+  var tempVely = 0;
+  var xOffset = 0;
+  var yOffset = 0;
+
+  if(orientation === 0) {
+    console.log("up");
+    tempVelx = 0;
+    tempVely = -15;
+    xOffset = 20;
+    yOffset = -1;
+
+  } else if (orientation === 1) {
+    console.log("right");
+    tempVelx = 15;
+    tempVely = 0;
+    xOffset = 38;
+    yOffset = 20;
+
+  } else if (orientation === 2) {
+    console.log("down");
+    tempVelx = 0;
+    tempVely = 15;
+    xOffset = 20;
+    yOffset = 38;
+
+  } else if (orientation === 3) {
+    console.log("left");
+    tempVelx = -15;
+    tempVely = 0;
+    xOffset = -1;
+    yOffset = 20;
+
+  }
+
+  var ball = new Ball(x + xOffset,y + yOffset,12,12,tempVelx,tempVely,"white");
   ball.launched = true;
   this.balls.push(ball);
 };
