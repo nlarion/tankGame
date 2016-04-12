@@ -28,22 +28,40 @@ var Level = function(currentLevel) {
 Level.prototype.makeBall = function(x,y,orientation){
   var tempVelx = 0;
   var tempVely = 0;
+  var xOffset = 0;
+  var yOffset = 0;
 
   if(orientation === 0) {
+    console.log("up");
     tempVelx = 0;
     tempVely = -15;
+    xOffset = 20;
+    yOffset = -1;
+
   } else if (orientation === 1) {
+    console.log("right");
     tempVelx = 15;
     tempVely = 0;
+    xOffset = 38;
+    yOffset = 20;
+
   } else if (orientation === 2) {
+    console.log("down");
     tempVelx = 0;
     tempVely = 15;
+    xOffset = 20;
+    yOffset = 38;
+
   } else if (orientation === 3) {
+    console.log("left");
     tempVelx = -15;
     tempVely = 0;
+    xOffset = -1;
+    yOffset = 20;
+
   }
 
-  var ball = new Ball(x + 50,y + 50,12,12,tempVelx,tempVely,"white");
+  var ball = new Ball(x + xOffset,y + yOffset,12,12,tempVelx,tempVely,"white");
   ball.launched = true;
   this.balls.push(ball);
 };
