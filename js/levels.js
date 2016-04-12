@@ -3,7 +3,10 @@ var LevelConstruct = function(){
   return [
     [
       ['Player',200,550,250,65,15,'red',0],
-      ['Inert',100,0,300,500,100,'white',10, ""],
+      ['Inert',475,0,400,50,100,'white',10, ""],
+      ['Inert',475,0,100,50,100,'white',10, ""],
+      ['Inert',250,0,275,100,50,'white',10, ""],
+      ['Inert',650,0,275,100,50,'white',10, ""],
     ]
   ];
 }
@@ -18,7 +21,7 @@ var Level = function(currentLevel) {
   this.projectiles = [];
   this.winCriteria = 0;
   this.getCurrentLevelprops();
-  this.makeBall(394,538);
+  this.makeBall(0,0);
 
 }
 
