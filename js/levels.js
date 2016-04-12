@@ -22,8 +22,25 @@ var Level = function(currentLevel) {
 
 }
 
-Level.prototype.makeBall = function(x,y){
-  var ball = new Ball(x + 50,y + 50,12,12,20,0,"white");
+Level.prototype.makeBall = function(x,y,orientation){
+  var tempVelx = 0;
+  var tempVely = 0;
+
+  if(orientation === 0) {
+    tempVelx = 0;
+    tempVely = -15;
+  } else if (orientation === 1) {
+    tempVelx = 15;
+    tempVely = 0;
+  } else if (orientation === 2) {
+    tempVelx = 0;
+    tempVely = 15;
+  } else if (orientation === 3) {
+    tempVelx = -15;
+    tempVely = 0;
+  }
+
+  var ball = new Ball(x + 50,y + 50,12,12,tempVelx,tempVely,"white");
   ball.launched = true;
   this.balls.push(ball);
 };
