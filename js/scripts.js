@@ -18,7 +18,7 @@ var Game = function(){
   this.level = 1;
   this.currentLevel = new Level(1);
   this.currentPlayer = new Player();
-  this.currentCharlee = new Charlee();
+  this.currentCharlee = new Tank();
 
 }
 
@@ -249,7 +249,7 @@ Game.prototype.initApp = function(){
   this.c.strokeRect(1, 1, canvas.width - 2, canvas.height - 2);
   this.c.font = " "+ canvas.width / 10 + "px serif";
   this.c.fillStyle = "#" + this.introCount + "";
-  this.c.fillText ("Breakout",canvas.width / 3, canvas.height / 2);
+  this.c.fillText ("Tank",canvas.width / 3, canvas.height / 2);
   if(this.introCount<150){
     this.introCount++;
   }else{
@@ -344,26 +344,34 @@ Game.prototype.collide = function(){
       }
     }
   }
-  for(var k = 0; k < this.currentLevel.powerUp.length; k++){
-    if(this.checkCollision(this.currentLevel.powerUp[k],this.currentLevel.bricks[0])){
-      this.runPowerUpCollisions(k);
+  for(var i=0; i < this.currentLevel.bricks.length; i++){
+    if(this.checkCollision(this.currentCharlee, this.currentLevel.bricks[i])){
+      console.log('collision');
+      //stuff
     }
   }
-  for(var l = 0; l < this.currentLevel.projectiles.length; l++) {
-    for(var m = 0; m < this.currentLevel.bricks.length; m++) {
-      if(this.checkCollision(this.currentLevel.projectiles[l],this.currentLevel.bricks[m]) && this.currentLevel.bricks[m].type !== 'Steady') {
-        this.currentLevel.bricks[m].life -= 0.2;
-        if(this.currentLevel.bricks[m].life <= 0) {
-          this.currentLevel.bricks.splice(m,1);
-          if(this.currentLevel.bricks.length === this.currentLevel.winCriteria && this.currentPlayer.lives>0){
-            this.handleLevelAdvance();
-          }
-        }
-        this.currentLevel.projectiles.splice(l,1);
-        break;
-      }
-    }
-  }
+
+
+  // for(var k = 0; k < this.currentLevel.powerUp.length; k++){
+  //   if(this.checkCollision(this.currentLevel.powerUp[k],this.currentLevel.bricks[0])){
+  //     this.runPowerUpCollisions(k);
+  //   }
+  // }
+  // for(var l = 0; l < this.currentLevel.projectiles.length; l++) {
+  //   for(var m = 0; m < this.currentLevel.bricks.length; m++) {
+  //     if(this.checkCollision(this.currentLevel.projectiles[l],this.currentLevel.bricks[m]) && this.currentLevel.bricks[m].type !== 'Steady') {
+  //       this.currentLevel.bricks[m].life -= 0.2;
+  //       if(this.currentLevel.bricks[m].life <= 0) {
+  //         this.currentLevel.bricks.splice(m,1);
+  //         if(this.currentLevel.bricks.length === this.currentLevel.winCriteria && this.currentPlayer.lives>0){
+  //           this.handleLevelAdvance();
+  //         }
+  //       }
+  //       this.currentLevel.projectiles.splice(l,1);
+  //       break;
+  //     }
+  //   }
+  // }
 };
 
 Game.prototype.checkCollision = function(thing1,thing2) {
@@ -393,10 +401,19 @@ Game.prototype.testWalls = function(){
       break;
     }
   }
-  if(this.currentPlayer.x+(this.currentLevel.bricks[0].w)>=canvas.width) {
-    this.currentPlayer.x = canvas.width-(this.currentLevel.bricks[0].w);
-  } else if(this.currentPlayer.x<=0) {
-    this.currentPlayer.x = 0;
+  //Test tank walls
+  if(this.currentCharlee.x > canvas.width-100){
+    this.currentCharlee.x = canvas.width-100;
+  }
+  if(this.currentCharlee.x < 0){
+    this.currentCharlee.x = 0;
+  }
+  if(this.currentCharlee.y > canvas.height-100){
+    this.currentCharlee.y = canvas.height-100;
+  }
+
+  if(this.currentCharlee.y < 0){
+    this.currentCharlee.y = 0;
   }
 };
 
