@@ -143,6 +143,13 @@ Game.prototype.renderCharlee = function(){
  				this.currentCharlee.frameIndex=3;
 				GetKeyCodeVar=0;
  			break;
+      case 32:
+				this.currentLevel.makeBall(this.currentCharlee.x, this.currentCharlee.y);
+ 			break;
+  			case 'fire':
+ 				this.currentCharlee.frameIndex=3;
+				GetKeyCodeVar=0;
+ 			break;
 
 		}
     this.getOtherKeyPress = undefined;
@@ -220,8 +227,6 @@ Game.prototype.clearCanvasAndDisplayDetails = function(){
   this.c.fillRect(0,0,canvas.width,canvas.height);
   this.c.font = "12px serif";
   this.c.fillStyle = "white";
-  this.c.fillText ("Level: "+this.level, 20, 20);
-  this.c.fillText ("Score: " + this.currentPlayer.score, canvas.width-65, 20);
   this.c.fillText ("Lives: ", 20, canvas.height - 20);
   this.c.fillText ("sourceX: "+this.currentCharlee.sourceX+" FrameIndex: "+ this.currentCharlee.frameIndex, canvas.width-170,canvas.height -20);
   this.c.fillText ("MathFloor: "+Math.floor(this.currentCharlee.animationFrames[this.currentCharlee.frameIndex] % 12)+" animation frame: "+ this.currentCharlee.animationFrames[this.currentCharlee.frameIndex], canvas.width-170,canvas.height -50);
@@ -249,7 +254,11 @@ Game.prototype.initApp = function(){
   this.c.strokeRect(1, 1, canvas.width - 2, canvas.height - 2);
   this.c.font = " "+ canvas.width / 10 + "px serif";
   this.c.fillStyle = "#" + this.introCount + "";
+<<<<<<< HEAD
+  this.c.fillText ("Tanks",canvas.width / 3, canvas.height / 2);
+=======
   this.c.fillText ("Tank",canvas.width / 3, canvas.height / 2);
+>>>>>>> 63c820aad4b95b77128dcb8dbdf0303402e65158
   if(this.introCount<150){
     this.introCount++;
   }else{
@@ -396,7 +405,6 @@ Game.prototype.testWalls = function(){
       }else {
         this.firstRun = true;
         this.audio.stop();
-        this.appState = STATE_GAMEOVER;
       }
       break;
     }
@@ -424,7 +432,7 @@ Game.prototype.drawRenderBalls = function(){
         this.currentLevel.balls[i].x = (this.currentLevel.bricks[0].x+((this.currentLevel.bricks[0].w/2)-(this.currentLevel.balls[i].w)/2));
         this.c.fillStyle = "blue";
         this.c.beginPath();
-        this.c.arc(this.currentLevel.balls[i].x+(this.currentLevel.balls[i].w/2),this.currentLevel.balls[i].y+(this.currentLevel.balls[i].w/2),this.currentLevel.balls[i].w/2,0,Math.PI*2,true);
+        this.c.arc(this.currentLevel.balls[i].x+(this.currentLevel.balls[i].w/2),this.currentLevel.balls[i].y+(this.currentLevel.balls[i].w/2),this.currentLevel.balls[i].w/2,0,Math.PI*2 ,true);
         this.c.closePath();
         this.c.fill();
       } else {
