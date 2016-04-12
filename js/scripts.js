@@ -362,11 +362,7 @@ Game.prototype.collide = function(){
       //   ((this.currentCharlee.x + this.currentCharlee.w > this.currentLevel.bricks[i].x) &&
       //   (this.currentCharlee.x > this.currentLevel.bricks[i].x ) || (this.currentCharlee.x + this.currentCharlee.w < this.currentLevel.bricks[i].x) &&
       //   (this.currentCharlee.x < this.currentLevel.bricks[i].x)) ) {
-      if ( (this.currentCharlee.y + this.currentCharlee.h > this.currentLevel.bricks[i].y) &&
-        (this.currentCharlee.y < this.currentLevel.bricks[i].y + this.currentLevel.bricks[i].h) &&
-        ((this.currentCharlee.x + this.currentCharlee.w > this.currentLevel.bricks[i].x) &&
-        (this.currentCharlee.x > this.currentLevel.bricks[i].x ) || (this.currentCharlee.x + this.currentCharlee.w < this.currentLevel.bricks[i].x) &&
-        (this.currentCharlee.x < this.currentLevel.bricks[i].x)) ) {
+      if ( (tankY + tankH > brickY) && (tankY < brickY + brickH) ){
         console.log("top");
 
         this.currentCharlee.y = this.currentCharlee.y+5;
