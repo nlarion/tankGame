@@ -346,7 +346,6 @@ Game.prototype.collide = function(){
   }
   for(var i=0; i < this.currentLevel.bricks.length; i++){
     if(this.checkCollision(this.currentCharlee, this.currentLevel.bricks[i])){
-      // console.log('collision');
       var tankY = this.currentCharlee.y;
       var tankX = this.currentCharlee.x;
       var tankW = this.currentCharlee.w;
@@ -357,36 +356,34 @@ Game.prototype.collide = function(){
       var brickW = this.currentLevel.bricks[i].w;
       var brickH = this.currentLevel.bricks[i].h;
       var bringIn = 5;
-      // console.log("tanky "+ tankY + " tankx " + tankX + " tankw " + tankW + " tankH " +tankH);
-      // console.log("bricky "+ brickY + " brickx " + brickX + " brickw " + parseInt(brickH));
-      console.log("tankX > brickX "+ ((tankX > brickX) && (tankX < ((brickX + brickW)-10))) );
-      console.log("tankX > brickX + brickW "+ ( ((tankX + tankW) > brickX) && ((tankX + tankW) < ((brickX + brickW)-10)) ) );
-      console.log("Other tankX > brickX + brickW "+ ( ((tankX > (brickX + (brickW / 2)) ) && (tankX < (brickX + brickW))) ));
-      console.log("Other tankY > brickY + brickH "+ (  (tankY < (brickY + brickH)) && (tankY > (brickY + brickH))  ));
 
-
-      // if ( (this.currentCharlee.y + this.currentCharlee.h > this.currentLevel.bricks[i].y) &&
-      //   (this.currentCharlee.y < this.currentLevel.bricks[i].y + this.currentLevel.bricks[i].h) &&
-      //   ((this.currentCharlee.x + this.currentCharlee.w > this.currentLevel.bricks[i].x) &&
-      //   (this.currentCharlee.x > this.currentLevel.bricks[i].x ) || (this.currentCharlee.x + this.currentCharlee.w < this.currentLevel.bricks[i].x) &&
-      //   (this.currentCharlee.x < this.currentLevel.bricks[i].x)) ) {
       if (
         ( ((tankX > brickX) && (tankX < ((brickX + brickW)-bringIn))) || ( ((tankX + tankW) > brickX) && ((tankX + tankW) < ((brickX + brickW)-bringIn)) ) )
         && ( (tankY < (brickY + brickH)) && (tankY > (brickY + (brickH / 2))) )
         ){
+        //top
         this.currentCharlee.y = this.currentCharlee.y+5;
+      }
+      else if (
+        ( ((tankX > brickX) && (tankX < ((brickX + brickW)-bringIn))) || ( ((tankX + tankW) > brickX) && ((tankX + tankW) < ((brickX + brickW)-bringIn)) ) )
+        && ( ((tankY+tankH) > brickY) && ((tankY+tankH) < (brickY + (brickH / 2))) )
+      ){
+        //bottom
+        this.currentCharlee.y = this.currentCharlee.y-5;
       }
       else if (
         ( ((tankX > (brickX + (brickW / 2)) ) && (tankX < (brickX + brickW))) )
         && ( ( (tankY < (brickY + brickH)) && (tankY > (brickY)) ) || ( ((tankY+tankH) < (brickY + brickH)) && ((tankY+tankH) > (brickY)) ) )
       ) {
-        console.log("side love");
+        //right
         this.currentCharlee.x = this.currentCharlee.x+5;
       }
-
-      else {
-        console.log("test");
-        this.currentCharlee.y = this.currentCharlee.y-5;
+      else if (
+        ( (( (tankX + tankW) > (brickX)) ) && ((tankX + tankW) < (brickX + (brickW/2))) )
+        && ( ( (tankY < (brickY + brickH)) && (tankY > (brickY)) ) || ( ((tankY+tankH) < (brickY + brickH)) && ((tankY+tankH) > (brickY)) ) )
+      ) {
+        //left
+        this.currentCharlee.x = this.currentCharlee.x-5;
       }
     }
   }
