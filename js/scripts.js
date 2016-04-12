@@ -79,7 +79,7 @@ Game.prototype.gameManager = function(){
 
 Game.prototype.renderCharlee = function(){
   if(this.getOtherKeyPress){
-    //console.log(this.getOtherKeyPress);
+    console.log(this.getOtherKeyPress);
     //console.log(this.currentCharlee);
     switch (this.getOtherKeyPress.keyCode) {
 
@@ -88,6 +88,7 @@ Game.prototype.renderCharlee = function(){
  				 this.currentCharlee.frameIndex=0;
 				 break;
 			case 100:
+        this.currentCharlee.orientation = 1;
   			this.currentCharlee.sourceX=0;
 				this.currentCharlee.sourceY=96;
 				this.currentCharlee.x=this.currentCharlee.x+this.currentCharlee.dx;
@@ -102,6 +103,7 @@ Game.prototype.renderCharlee = function(){
 				GetKeyCodeVar=0;
  				break;
  			case 97:
+        this.currentCharlee.orientation = 3;
  				this.currentCharlee.sourceX=0;
 				this.currentCharlee.sourceY=64;
 				this.currentCharlee.x=this.currentCharlee.x-this.currentCharlee.dx; //horizonal
@@ -116,6 +118,7 @@ Game.prototype.renderCharlee = function(){
 				GetKeyCodeVar=0;
  			break;
  			case 115:
+        this.currentCharlee.orientation = 2;
  				this.currentCharlee.sourceX=0;
 				this.currentCharlee.sourceY=32;
 				this.currentCharlee.y=this.currentCharlee.y+this.currentCharlee.dy; //vertical
@@ -130,6 +133,7 @@ Game.prototype.renderCharlee = function(){
 				GetKeyCodeVar=0;
  			break;
  			case 119:
+        this.currentCharlee.orientation = 0;
  				this.currentCharlee.sourceX=0;
 				this.currentCharlee.sourceY=0;
 				this.currentCharlee.y=this.currentCharlee.y-this.currentCharlee.dy; //vertical
@@ -140,6 +144,13 @@ Game.prototype.renderCharlee = function(){
 				}
  			break;
   			case 'upstop':
+ 				this.currentCharlee.frameIndex=3;
+				GetKeyCodeVar=0;
+ 			break;
+      case 32:
+				this.currentLevel.makeBall(this.currentCharlee.x, this.currentCharlee.y, this.currentCharlee.orientation);
+ 			break;
+  			case 'fire':
  				this.currentCharlee.frameIndex=3;
 				GetKeyCodeVar=0;
  			break;
@@ -215,56 +226,54 @@ Game.prototype.gameLoop = function(){
 };
 
   // this.currentCharlee.sourceX=Math.floor(this.currentCharlee.animationFrames[this.currentCharlee.frameIndex] % 12) *50;
-Game.prototype.clearCanvasAndDisplayDetails = function(){
-  this.c.fillStyle = "gray";
-  this.c.fillRect(0,0,canvas.width,canvas.height);
-  this.c.font = "12px serif";
-  this.c.fillStyle = "white";
-  this.c.fillText ("Level: "+this.level, 20, 20);
-  this.c.fillText ("Score: " + this.currentPlayer.score, canvas.width-65, 20);
-  this.c.fillText ("Lives: ", 20, canvas.height - 20);
-  this.c.fillText ("sourceX: "+this.currentCharlee.sourceX+" FrameIndex: "+ this.currentCharlee.frameIndex, canvas.width-170,canvas.height -20);
-  this.c.fillText ("MathFloor: "+Math.floor(this.currentCharlee.animationFrames[this.currentCharlee.frameIndex] % 12)+" animation frame: "+ this.currentCharlee.animationFrames[this.currentCharlee.frameIndex], canvas.width-170,canvas.height -50);
-  for (var i = 0; i < this.currentPlayer.lives-1; i++) {
-    this.c.fillStyle = "blue";
-    this.c.beginPath();
-    this.c.arc((i*20)+60,canvas.height-25,this.currentLevel.balls[0].w/2,0,Math.PI*2,true);
-    this.c.closePath();
-    this.c.fill();
-    // this.c.fillRect((i*20)+60,canvas.height -30,10,10);
-  }
-}
-
-Game.prototype.initApp = function(){
-  if (this.firstRun) {
-    this.audio.start("loop5");
-    this.firstRun = false;
-  }
-  fadeIn = this.introCount + 30;
-  colorModifier = fadeIn.toString(16);
-  this.c.fillStyle = '#0001' + colorModifier;
-  this.c.fillRect(0, 0, canvas.width, canvas.height);
-  //Box
-  this.c.strokeStyle = '#000000';
-  this.c.strokeRect(1, 1, canvas.width - 2, canvas.height - 2);
-  this.c.font = " "+ canvas.width / 10 + "px serif";
-  this.c.fillStyle = "#" + this.introCount + "";
-  this.c.fillText ("Tank",canvas.width / 3, canvas.height / 2);
-  if(this.introCount<150){
-    this.introCount++;
-  }else{
-    this.c.strokeStyle = '#000000';
-    this.c.font = " "+ canvas.width / 30 + "px serif";
+  Game.prototype.clearCanvasAndDisplayDetails = function(){
+    this.c.fillStyle = "gray";
+    this.c.fillRect(0,0,canvas.width,canvas.height);
+    this.c.font = "12px serif";
     this.c.fillStyle = "white";
-    this.c.fillText("Click to Start a New Game",canvas.width / 3, canvas.height / 1.5);
+    this.c.fillText ("Lives: ", 20, canvas.height - 20);
+    this.c.fillText ("sourceX: "+this.currentCharlee.sourceX+" FrameIndex: "+ this.currentCharlee.frameIndex, canvas.width-170,canvas.height -20);
+    this.c.fillText ("MathFloor: "+Math.floor(this.currentCharlee.animationFrames[this.currentCharlee.frameIndex] % 12)+" animation frame: "+ this.currentCharlee.animationFrames[this.currentCharlee.frameIndex], canvas.width-170,canvas.height -50);
+    for (var i = 0; i < this.currentPlayer.lives-1; i++) {
+      this.c.fillStyle = "blue";
+      this.c.beginPath();
+      this.c.arc((i*20)+60,canvas.height-25,this.currentLevel.balls[0].w/2,0,Math.PI*2,true);
+      this.c.closePath();
+      this.c.fill();
+      // this.c.fillRect((i*20)+60,canvas.height -30,10,10);
+    }
   }
-  if (this.isTheMouseBeingPressed == true) {
-    this.isTheMouseBeingPressed = false;
-    this.firstRun = true;
-    this.audio.stop();
-    this.appState = STATE_PLAYING;
+
+  Game.prototype.initApp = function(){
+    if (this.firstRun) {
+      this.audio.start("loop5");
+      this.firstRun = false;
+    }
+    fadeIn = this.introCount + 30;
+    colorModifier = fadeIn.toString(16);
+    this.c.fillStyle = '#0001' + colorModifier;
+    this.c.fillRect(0, 0, canvas.width, canvas.height);
+    //Box
+    this.c.strokeStyle = '#000000';
+    this.c.strokeRect(1, 1, canvas.width - 2, canvas.height - 2);
+    this.c.font = " "+ canvas.width / 10 + "px serif";
+    this.c.fillStyle = "#" + this.introCount + "";
+    this.c.fillText ("Tanks",canvas.width / 3, canvas.height / 2);
+    if(this.introCount<150){
+      this.introCount++;
+    }else{
+      this.c.strokeStyle = '#000000';
+      this.c.font = " "+ canvas.width / 30 + "px serif";
+      this.c.fillStyle = "white";
+      this.c.fillText("Click to Start a New Game",canvas.width / 3, canvas.height / 1.5);
+    }
+    if (this.isTheMouseBeingPressed == true) {
+      this.isTheMouseBeingPressed = false;
+      this.firstRun = true;
+      this.audio.stop();
+      this.appState = STATE_PLAYING;
+    }
   }
-}
 
 Game.prototype.drawBricks = function(){
   this.c.fillStyle ="red";
