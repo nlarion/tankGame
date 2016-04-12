@@ -219,6 +219,7 @@ Game.prototype.gameLoop = function(){
     this.updatePosition();
     this.testWalls();
   }
+  this.ballCollide();
   this.drawBricks();
   this.drawRenderBalls();
   this.renderCharlee();
@@ -263,7 +264,7 @@ Game.prototype.gameLoop = function(){
       this.introCount++;
     }else{
       this.c.strokeStyle = '#000000';
-      this.c.font = " "+ canvas.width / 30 + "px serif";
+      this.c.font = "Test"+ canvas.width / 30 + "px serif";
       this.c.fillStyle = "white";
       this.c.fillText("Click to Start a New Game",canvas.width / 3, canvas.height / 1.5);
     }
@@ -463,6 +464,67 @@ Game.prototype.drawRenderBalls = function(){
   }
 };
 
+Game.prototype.ballCollide = function(){
+  for (var i = 0; i < this.currentLevel.balls.length; i++) {
+    if ( this.checkCollision(this.currentLevel.balls[i],this.currentCharlee) ) { //left and right of ball
+      if ( (this.currentLevel.balls[i].y + this.currentLevel.balls[i].h > this.currentCharlee.y) &&
+        (this.currentLevel.balls[i].y < this.currentCharlee.y + this.currentCharlee.h) &&
+        ((this.currentLevel.balls[i].x + this.currentLevel.balls[i].w > this.currentCharlee.x) &&
+        (this.currentLevel.balls[i].x > this.currentCharlee.x ) || (this.currentLevel.balls[i].x + this.currentLevel.balls[i].w < this.currentCharlee.x) &&
+        (this.currentLevel.balls[i].x < this.currentCharlee.x)) ) {
+          console.log("ball collision testing.", this.currentCharlee.tankLives);
+        this.currentLevel.balls.splice(i, 1);
+        this.currentCharlee.tankLives -= 1;
+
+        //+0.5 increases the ball speed every time it hits something.
+        //try and make the ball do something here.
+      } else {
+        console.log("super test");
+
+      }
+      //this.doCollide(i,j);
+    }
+  }
+  for(var i=0; i < this.currentLevel.bricks.length; i++){
+    if(this.checkCollision(this.currentCharlee, this.currentLevel.bricks[i])){
+      // console.log('collision');
+      var tankY = this.currentCharlee.y;
+      var tankX = this.currentCharlee.x;
+      var tankW = this.currentCharlee.w;
+      var tankH = this.currentCharlee.h;
+
+      var brickY = this.currentLevel.bricks[i].y;
+      var brickX = this.currentLevel.bricks[i].x;
+      var brickW = this.currentLevel.bricks[i].w;
+      var brickH = this.currentLevel.bricks[i].h;
+      console.log("tanky "+ tankY + " tankx " + tankX + " tankw " + tankW + " tankH " +tankH);
+      console.log("bricky "+ brickY + " brickx " + brickX + " brickw " + parseInt(brickH));
+
+      // if ( (this.currentCharlee.y + this.currentCharlee.h > this.currentLevel.bricks[i].y) &&
+      //   (this.currentCharlee.y < this.currentLevel.bricks[i].y + this.currentLevel.bricks[i].h) &&
+      //   ((this.currentCharlee.x + this.currentCharlee.w > this.currentLevel.bricks[i].x) &&
+      //   (this.currentCharlee.x > this.currentLevel.bricks[i].x ) || (this.currentCharlee.x + this.currentCharlee.w < this.currentLevel.bricks[i].x) &&
+      //   (this.currentCharlee.x < this.currentLevel.bricks[i].x)) ) {
+      if (
+        ( ((tankX > brickX) && (tankX < (brickX + brickW))) || ( ((tankX + tankW) > brickX) && ((tankX + tankW) < (brickX + brickW)) ) )
+        && ( (tankY < (brickY + brickH)) && (tankY > (brickY + (brickH / 2))) )
+
+
+        ){
+        console.log("Im tripping");
+
+        this.currentCharlee.y = this.currentCharlee.y+5;
+        //this.currentCharlee.dx = 0;
+        //this.currentCharlee.dy = 0;//+0.5 increases the ball speed every time it hits something.
+        //try and make the ball do something here.
+      } else {
+        console.log("test");
+        this.currentCharlee.y = this.currentCharlee.y-5;
+      }
+    }
+  }
+};
+
 Game.prototype.updatePosition = function(){
   for (var i = 0; i < this.currentLevel.balls.length; i++) {
     if(this.isTheMouseBeingPressed) {
@@ -495,6 +557,7 @@ Game.prototype.runTheGame = function(){
   var t = this;
   setInterval(function(){t.gameManager();}, 30);
 };
+
 
 $(function(){
   var game = new Game();

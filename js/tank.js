@@ -13,5 +13,6 @@ var Tank = function () {
   this.x = 50;
   this.y = 50;
   this.orientation = 0;
+  this.tankLives = 3;
 
 };
