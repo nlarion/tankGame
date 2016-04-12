@@ -39,7 +39,7 @@ Game.prototype.gameManager = function(){
     // this.audio = new Audio('sounds/breakoutLoop1.mp3');
     //tileSheet was here
     this.tileSheet = new Image();
-    this.tileSheet.src = "images/charlee.png"; // load all assets now so
+    this.tileSheet.src = "images/redtank.png"; // load all assets now so
     var t = this;
     this.$canvas.mousemove(function(e){
       t.currentPlayer.x = e.offsetX-((t.currentLevel.bricks[0].w)/2);
@@ -88,8 +88,8 @@ Game.prototype.renderCharlee = function(){
  				 this.currentCharlee.frameIndex=0;
 				 break;
 			case 100:
-  			//this.currentCharlee.sourceX=50;
-				this.currentCharlee.sourceY=0;
+  			this.currentCharlee.sourceX=0;
+				this.currentCharlee.sourceY=96;
 				this.currentCharlee.x=this.currentCharlee.x+this.currentCharlee.dx;
 				if (this.currentCharlee.frameIndex>=this.currentCharlee.animationFrames.length-1){
 					this.currentCharlee.frameIndex=6;
@@ -102,8 +102,8 @@ Game.prototype.renderCharlee = function(){
 				GetKeyCodeVar=0;
  				break;
  			case 97:
- 				//this.currentCharlee.sourceX=50;
-				this.currentCharlee.sourceY=50;
+ 				this.currentCharlee.sourceX=0;
+				this.currentCharlee.sourceY=64;
 				this.currentCharlee.x=this.currentCharlee.x-this.currentCharlee.dx; //horizonal
 				if (this.currentCharlee.frameIndex>=this.currentCharlee.animationFrames.length-1){
 					this.currentCharlee.frameIndex=7;
@@ -116,10 +116,10 @@ Game.prototype.renderCharlee = function(){
 				GetKeyCodeVar=0;
  			break;
  			case 115:
- 				//this.currentCharlee.sourceX=50;
-				this.currentCharlee.sourceY=100;
+ 				this.currentCharlee.sourceX=0;
+				this.currentCharlee.sourceY=32;
 				this.currentCharlee.y=this.currentCharlee.y+this.currentCharlee.dy; //vertical
-				if (this.currentCharlee.frameIndex>=this.currentCharlee.animationFrames.length-3){
+				if (this.currentCharlee.frameIndex>=this.currentCharlee.animationFrames.length-1){
 					this.currentCharlee.frameIndex=2;
 				} else {
 					this.currentCharlee.frameIndex++;
@@ -130,10 +130,10 @@ Game.prototype.renderCharlee = function(){
 				GetKeyCodeVar=0;
  			break;
  			case 119:
- 				//this.currentCharlee.sourceX=50;
-				this.currentCharlee.sourceY=100;
+ 				this.currentCharlee.sourceX=0;
+				this.currentCharlee.sourceY=0;
 				this.currentCharlee.y=this.currentCharlee.y-this.currentCharlee.dy; //vertical
-				if (this.currentCharlee.frameIndex>=this.currentCharlee.animationFrames.length-3){
+				if (this.currentCharlee.frameIndex>=this.currentCharlee.animationFrames.length-1){
 					this.currentCharlee.frameIndex=2;
 				} else {
 					this.currentCharlee.frameIndex++;
@@ -147,8 +147,8 @@ Game.prototype.renderCharlee = function(){
 		}
     this.getOtherKeyPress = undefined;
   }
-  this.currentCharlee.sourceX=Math.floor(this.currentCharlee.animationFrames[this.currentCharlee.frameIndex] % 12) *50;
-  this.c.drawImage(this.tileSheet, this.currentCharlee.sourceX,this.currentCharlee.sourceY,50,50,this.currentCharlee.x,this.currentCharlee.y,100,100);
+  this.currentCharlee.sourceX=Math.floor(this.currentCharlee.animationFrames[this.currentCharlee.frameIndex] % 7) *32;
+  this.c.drawImage(this.tileSheet, this.currentCharlee.sourceX,this.currentCharlee.sourceY,32,32,this.currentCharlee.x,this.currentCharlee.y,100,100);
   //this.c.fillRect(this.currentCharlee.y,this.currentCharlee.x,100,100);
 
 }
