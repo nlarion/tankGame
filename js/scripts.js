@@ -4,7 +4,7 @@ const STATE_INIT = 10,
   STATE_PLAYING = 40,
   STATE_GAMEOVER = 50,
   STATE_WIN = 60,
-  STATE_LOADING_LEVEL = 70;
+  STATE_LOADING_LEVEL = 70,
   STATE_CREDITS_SCREEN = 80;
 
 var Game = function(){
@@ -80,12 +80,10 @@ Game.prototype.gameManager = function(){
 
 Game.prototype.renderCharlee = function(){
   if(this.getOtherKeyPress){
-    console.log(this.getOtherKeyPress);
+    // console.log(this.getOtherKeyPress);
     //console.log(this.currentCharlee);
     switch (this.getOtherKeyPress.keyCode) {
-
 			case undefined:
-      	//console.log(this.getOtherKeyPress);
  				 this.currentCharlee.frameIndex=0;
 				 break;
 			case 100:
@@ -202,9 +200,9 @@ Game.prototype.changeStateAndRestartGame = function(){
 }
 
 Game.prototype.gameLoop = function(){
-  this.firebase.on("value", function(snapshot){
-    var data = snapshot.val();
-    })
+  // this.firebase.on("value", function(snapshot){
+  //   var data = snapshot.val();
+  // });
   if (this.firstRun) {
     this.audio.start("loop1");
     this.firstRun = false;
@@ -227,12 +225,13 @@ Game.prototype.gameLoop = function(){
   this.drawBricks();
   this.drawRenderBalls();
   this.renderCharlee();
-  this.updateFirebase();
+  //this.updateFirebase();
 
 };
 
 Game.prototype.updateFirebase = function(){
   this.firebase.child('game').set({x: this.currentCharlee.x, y: this.currentCharlee.y});
+
 }
 
 // this.currentCharlee.sourceX=Math.floor(this.currentCharlee.animationFrames[this.currentCharlee.frameIndex] % 12) *50;
@@ -340,6 +339,7 @@ Game.prototype.drawBricks = function(){
 };
 
 Game.prototype.collide = function(){
+
   for (var i = 0; i < this.currentLevel.balls.length; i++) {
     for (var j = 0; j < this.currentLevel.bricks.length; j++) {
       if ( this.checkCollision(this.currentLevel.balls[i],this.currentLevel.bricks[j]) ) { //left and right of ball
@@ -381,6 +381,7 @@ Game.prototype.collide = function(){
         && ( (tankY < (brickY + brickH)) && (tankY > (brickY + (brickH / 2))) )
         ){
         //top
+        console.log("hi");
         this.currentCharlee.y = this.currentCharlee.y+5;
       }
       else if (
@@ -410,6 +411,7 @@ Game.prototype.collide = function(){
 
 Game.prototype.checkCollision = function(thing1,thing2) {
   if((((thing1.y+thing1.vely) + thing1.h) > (thing2.y)) && ((thing1.y+thing1.vely) < (thing2.y + thing2.h)) && (((thing1.x+thing1.velx) + thing1.w) > thing2.x) && ((thing1.x+thing1.velx) < (thing2.x + thing2.w))){
+    console.log("test");
     return true;
   } else {
     return false;

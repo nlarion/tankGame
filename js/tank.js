@@ -7,12 +7,10 @@ var Tank = function () {
   this.sourceY = 32;
   this.w = 50;
   this.h = 50;
-  this.velx = 0;
-  this.vely = 0;
-  this.radius = 30;
   this.x = 50;
   this.y = 50;
   this.orientation = 0;
   this.tankLives = 3;
+  this.isHit = false;
 
 };
