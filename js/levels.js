@@ -25,43 +25,43 @@ var Level = function(currentLevel) {
 
 }
 
-Level.prototype.makeBall = function(x,y,orientation){
-  var tempVelx = 0;
-  var tempVely = 0;
-  var xOffset = 0;
-  var yOffset = 0;
+Level.prototype.makeBall = function(x,y,rotation){
+  var ballXvel = 5*Math.cos(Math.PI*(rotation)/180);
+	var ballYvel = 5*Math.sin(Math.PI*(rotation)/180);
+	var ballX	= x;
+	var ballY = y;
 
-  if(orientation === 0) {
-    console.log("up");
-    tempVelx = 0;
-    tempVely = -15;
-    xOffset = 20;
-    yOffset = -1;
+  // if(orientation === 0) {
+  //   console.log("up");
+  //   tempVelx = 0;
+  //   tempVely = -15;
+  //   xOffset = 20;
+  //   yOffset = -1;
+  //
+  // } else if (orientation === 1) {
+  //   console.log("right");
+  //   tempVelx = 15;
+  //   tempVely = 0;
+  //   xOffset = 38;
+  //   yOffset = 20;
+  //
+  // } else if (orientation === 2) {
+  //   console.log("down");
+  //   tempVelx = 0;
+  //   tempVely = 15;
+  //   xOffset = 20;
+  //   yOffset = 38;
+  //
+  // } else if (orientation === 3) {
+  //   console.log("left");
+  //   tempVelx = -15;
+  //   tempVely = 0;
+  //   xOffset = -1;
+  //   yOffset = 20;
+  //
+  // }
 
-  } else if (orientation === 1) {
-    console.log("right");
-    tempVelx = 15;
-    tempVely = 0;
-    xOffset = 38;
-    yOffset = 20;
-
-  } else if (orientation === 2) {
-    console.log("down");
-    tempVelx = 0;
-    tempVely = 15;
-    xOffset = 20;
-    yOffset = 38;
-
-  } else if (orientation === 3) {
-    console.log("left");
-    tempVelx = -15;
-    tempVely = 0;
-    xOffset = -1;
-    yOffset = 20;
-
-  }
-
-  var ball = new Ball(x + xOffset,y + yOffset,12,12,tempVelx,tempVely,"white");
+  var ball = new Ball(x,y,12,12,ballXvel,ballYvel,"white");
   ball.launched = true;
   this.balls.push(ball);
 };
