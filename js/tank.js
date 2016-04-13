@@ -1,7 +1,7 @@
 var Tank = function () {
   this.dx = 5; //player horizonal speed
 	this.dy = 5; //player vertical speed
-  this.animationFrames = [0,1,2,3,4,5,6,7,8,9,10,11];
+  this.animationFrames = [0,1,2,3,4,5,6,7];
   this.frameIndex = 0;
   this.sourceX = 0;
   this.sourceY = 96;

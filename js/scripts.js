@@ -30,15 +30,6 @@ Game.prototype.gameManager = function(){
   case STATE_LOADING:
     this.firebase.set({game: 'Game'});
     //load assets
-    this.audio = new SeamlessLoop();
-    this.audio.addUri('sounds/breakoutLoop1.mp3',5350,"loop1");
-    this.audio.addUri('sounds/breakoutLoop2.mp3',18700,"loop2");
-    this.audio.addUri('sounds/breakoutLoop3.mp3',2720,"loop3");
-    this.audio.addUri('sounds/breakoutLoop4.mp3',2700,"loop4");
-    this.audio.addUri('sounds/breakoutLoop5.mp3',7990,"loop5");
-    this.sounds = {gameOver: new Audio('sounds/breakoutGameOver.mp3'), normalHit: new Audio('sounds/SG280_BD_11.mp3'), lightHit: new Audio('sounds/SG280_Bongo_08.mp3'), powerUp: new Audio('sounds/SG280_Cym_01.mp3'), steady: new Audio('sounds/SG280_Tom_02.mp3'), mediumHit: new Audio('sounds/SG280_SD_02.mp3')};
-    // this.audio = new Audio('sounds/breakoutLoop1.mp3');
-    //tileSheet was here
     this.tileSheet = new Image();
     this.tileSheet.src = "images/redtank.png"; // load all assets now so
     var t = this;
@@ -94,13 +85,13 @@ Game.prototype.renderCharlee = function(){
 				this.currentCharlee.rotation += this.currentCharlee.rotationVel;
         // this.currentCharlee.y=this.currentCharlee.y-this.currentCharlee.dy;
 				if (this.currentCharlee.frameIndex>=this.currentCharlee.animationFrames.length-1){
-					this.currentCharlee.frameIndex=6;
+					this.currentCharlee.frameIndex=0;
 				} else {
 					this.currentCharlee.frameIndex++;
 				}
  				break;
 			case 'rightstop':
- 				this.currentCharlee.frameIndex=3;
+ 				this.currentCharlee.frameIndex=0;
 				GetKeyCodeVar=0;
  				break;
  			case 97:
@@ -109,13 +100,13 @@ Game.prototype.renderCharlee = function(){
         this.currentCharlee.rotation -= this.currentCharlee.rotationVel;
 				// this.currentCharlee.x=this.currentCharlee.x-this.currentCharlee.dx; //horizonal
 				if (this.currentCharlee.frameIndex>=this.currentCharlee.animationFrames.length-1){
-					this.currentCharlee.frameIndex=7;
+					this.currentCharlee.frameIndex=0;
 				} else {
 					this.currentCharlee.frameIndex++;
 				}
  			break;
  			case 'leftstop':
- 				this.currentCharlee.frameIndex=3;
+ 				this.currentCharlee.frameIndex=0;
 				GetKeyCodeVar=0;
  			break;
  			case 115:
@@ -131,13 +122,13 @@ Game.prototype.renderCharlee = function(){
         console.log(this.currentCharlee.x);
         this.currentCharlee.y=this.currentCharlee.y-(this.currentCharlee.dy*this.currentCharlee.facingY);
 				if (this.currentCharlee.frameIndex>=this.currentCharlee.animationFrames.length-1){
-					this.currentCharlee.frameIndex=2;
+					this.currentCharlee.frameIndex=0;
 				} else {
 					this.currentCharlee.frameIndex++;
 				}
  				break;
  			case 'downstop':
- 				this.currentCharlee.frameIndex=3;
+ 				this.currentCharlee.frameIndex=0;
 				GetKeyCodeVar=0;
  			break;
  			case 119:
@@ -152,13 +143,13 @@ Game.prototype.renderCharlee = function(){
       this.currentCharlee.y=this.currentCharlee.y+(this.currentCharlee.dy*this.currentCharlee.facingY);
       console.log(this.currentCharlee.y); //vertical
 				if (this.currentCharlee.frameIndex>=this.currentCharlee.animationFrames.length-1){
-					this.currentCharlee.frameIndex=2;
+					this.currentCharlee.frameIndex=0;
 				} else {
 					this.currentCharlee.frameIndex++;
 				}
  			break;
   			case 'upstop':
- 				this.currentCharlee.frameIndex=3;
+ 				this.currentCharlee.frameIndex=0;
 				GetKeyCodeVar=0;
  			break;
       case 32:
@@ -168,14 +159,13 @@ Game.prototype.renderCharlee = function(){
 			this.currentLevel.makeBall(this.currentCharlee.x, this.currentCharlee.y,this.currentCharlee.rotation);
  			break;
   			case 'fire':
- 				this.currentCharlee.frameIndex=3;
 				GetKeyCodeVar=0;
  			break;
 
 		}
     this.getOtherKeyPress = undefined;
   }
-  this.c.fillRect(this.currentCharlee.x,this.currentCharlee.y,this.currentCharlee.w,this.currentCharlee.h);
+  // this.c.fillRect(this.currentCharlee.x,this.currentCharlee.y,this.currentCharlee.w,this.currentCharlee.h);
   this.currentCharlee.sourceX=Math.floor(this.currentCharlee.animationFrames[this.currentCharlee.frameIndex] % 7) *32;
   // this.c.drawImage(this.tileSheet, this.currentCharlee.sourceX,this.currentCharlee.sourceY,32,32,this.currentCharlee.x,this.currentCharlee.y,this.currentCharlee.w,this.currentCharlee.h);
   //this.c.fillRect(this.currentCharlee.x,this.currentCharlee.y,this.currentCharlee.w,this.currentCharlee.h);
@@ -239,7 +229,6 @@ Game.prototype.gameLoop = function(){
     var data = snapshot.val();
     })
   if (this.firstRun) {
-    this.audio.start("loop1");
     this.firstRun = false;
   }
   if(this.getKeyPress){
@@ -271,26 +260,17 @@ Game.prototype.updateFirebase = function(){
 
 // this.currentCharlee.sourceX=Math.floor(this.currentCharlee.animationFrames[this.currentCharlee.frameIndex] % 12) *50;
 Game.prototype.clearCanvasAndDisplayDetails = function(){
-  this.c.fillStyle = "gray";
+  this.c.fillStyle = "#54717A";
   this.c.fillRect(0,0,canvas.width,canvas.height);
   this.c.font = "12px serif";
   this.c.fillStyle = "white";
-  this.c.fillText ("Lives: ", 20, canvas.height - 20);
   this.c.fillText ("sourceX: "+this.currentCharlee.sourceX+" FrameIndex: "+ this.currentCharlee.frameIndex, canvas.width-170,canvas.height -20);
   this.c.fillText ("MathFloor: "+Math.floor(this.currentCharlee.animationFrames[this.currentCharlee.frameIndex] % 12)+" animation frame: "+ this.currentCharlee.animationFrames[this.currentCharlee.frameIndex], canvas.width-170,canvas.height -50);
-  for (var i = 0; i < this.currentPlayer.lives-1; i++) {
-    this.c.fillStyle = "blue";
-    this.c.beginPath();
-    this.c.arc((i*20)+60,canvas.height-25,this.currentLevel.balls[0].w/2,0,Math.PI*2,true);
-    this.c.closePath();
-    this.c.fill();
     // this.c.fillRect((i*20)+60,canvas.height -30,10,10);
-  }
 }
 
 Game.prototype.initApp = function(){
-  if (this.firstRun) {
-    this.audio.start("loop5");
+  if (this.firstRun) {w
     this.firstRun = false;
   }
   fadeIn = this.introCount + 30;
@@ -320,7 +300,7 @@ Game.prototype.initApp = function(){
 }
 
 Game.prototype.drawBricks = function(){
-  this.c.fillStyle ="red";
+  this.c.fillStyle ="#144252";
   for (var i = 0; i < this.currentLevel.bricks.length; i++) {
     this.currentLevel.bricks[i].player ? false : this.currentLevel.bricks[i].y +=(200-this.currentLevel.bricks[i].y)*.1; //simple easing.
     if(this.currentLevel.bricks[i].player){
@@ -490,7 +470,7 @@ Game.prototype.drawRenderBalls = function(){
     for (var i = 0; i < this.currentLevel.balls.length; i++) {
       if(!this.currentLevel.balls[i].launched) {
         this.currentLevel.balls[i].x = (this.currentLevel.bricks[0].x+((this.currentLevel.bricks[0].w/2)-(this.currentLevel.balls[i].w)/2));
-        this.c.fillStyle = "blue";
+        this.c.fillStyle = "#D9D9D9";
         this.c.beginPath();
         this.c.arc(this.currentLevel.balls[i].x+(this.currentLevel.balls[i].w/2),this.currentLevel.balls[i].y+(this.currentLevel.balls[i].w/2),this.currentLevel.balls[i].w/2,0,Math.PI*2,true);
         this.c.closePath();
@@ -498,7 +478,7 @@ Game.prototype.drawRenderBalls = function(){
       } else {
         this.currentLevel.balls[i].x += this.currentLevel.balls[i].velx;
         this.currentLevel.balls[i].y += this.currentLevel.balls[i].vely;
-        this.c.fillStyle = "blue";
+        this.c.fillStyle = "#D9D9D9";
         this.c.beginPath();
         this.c.arc(this.currentLevel.balls[i].x+(this.currentLevel.balls[i].w/2),this.currentLevel.balls[i].y+(this.currentLevel.balls[i].w/2),this.currentLevel.balls[i].w/2,0,Math.PI*2,true);
         this.c.closePath();
