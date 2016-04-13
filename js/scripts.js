@@ -12,7 +12,7 @@ var Game = function(){
   this.pointImage = new Image();
   this.appState = STATE_LOADING;
   this.isTheMouseBeingPressed = false;
-  this.introCount = {finalX: 475, startX: 1100, textFade: 0};
+  this.introCount = {finalX: 475, startX: 1100, textFade: 0, xMod: 270, yMod: 285};
   this.$canvas = $('canvas');
   this.c = this.$canvas[0].getContext('2d');
   this.level = 1;
@@ -82,8 +82,6 @@ Game.prototype.gameManager = function(){
 
 Game.prototype.renderLocalPlayer = function(){
   if(this.getOtherKeyPress){
-    // console.log(this.getOtherKeyPress);
-    //console.log(this.localPlayer);
     switch (this.getOtherKeyPress.keyCode) {
 			case undefined:
  				 this.localPlayer.frameIndex=0;
@@ -99,10 +97,6 @@ Game.prototype.renderLocalPlayer = function(){
 					this.localPlayer.frameIndex++;
 				}
  				break;
-			case 'rightstop':
- 				this.localPlayer.frameIndex=3;
-				GetKeyCodeVar=0;
- 				break;
  			case 97:
  				this.localPlayer.sourceX=0;
 				this.localPlayer.sourceY=96;
@@ -113,22 +107,14 @@ Game.prototype.renderLocalPlayer = function(){
 				} else {
 					this.localPlayer.frameIndex++;
 				}
- 			break;
- 			case 'leftstop':
- 				this.localPlayer.frameIndex=3;
-				GetKeyCodeVar=0;
- 			break;
+ 			  break;
  			case 115:
  				this.localPlayer.sourceX=0;
 				this.localPlayer.sourceY=96;
         var angleInRadians = this.localPlayer.rotation * Math.PI / 180;
         this.localPlayer.facingX=Math.cos(angleInRadians);
         this.localPlayer.facingY=Math.sin(angleInRadians);
-        console.log(this.localPlayer.facingX);
-        console.log(this.localPlayer.facingY);
-
         this.localPlayer.x=this.localPlayer.x-(this.localPlayer.dx*this.localPlayer.facingX);
-        console.log(this.localPlayer.x);
         this.localPlayer.y=this.localPlayer.y-(this.localPlayer.dy*this.localPlayer.facingY);
 				if (this.localPlayer.frameIndex>=this.localPlayer.animationFrames.length-1){
 					this.localPlayer.frameIndex=2;
@@ -136,38 +122,26 @@ Game.prototype.renderLocalPlayer = function(){
 					this.localPlayer.frameIndex++;
 				}
  				break;
- 			case 'downstop':
- 				this.localPlayer.frameIndex=3;
-				GetKeyCodeVar=0;
- 			break;
  			case 119:
-      var angleInRadians = this.localPlayer.rotation * Math.PI / 180;
-      this.localPlayer.facingX=Math.cos(angleInRadians);
-      this.localPlayer.facingY=Math.sin(angleInRadians);
-      console.log(this.localPlayer.facingX);
-      console.log(this.localPlayer.facingY);
-
-      this.localPlayer.x=this.localPlayer.x+(this.localPlayer.dx*this.localPlayer.facingX);
-      console.log(this.localPlayer.x);
-      this.localPlayer.y=this.localPlayer.y+(this.localPlayer.dy*this.localPlayer.facingY);
-      console.log(this.localPlayer.y); //vertical
-				if (this.localPlayer.frameIndex>=this.localPlayer.animationFrames.length-1){
-					this.localPlayer.frameIndex=2;
-				} else {
-					this.localPlayer.frameIndex++;
-				}
- 			break;
-  			case 'upstop':
- 				this.localPlayer.frameIndex=3;
-				GetKeyCodeVar=0;
- 			break;
+        var angleInRadians = this.localPlayer.rotation * Math.PI / 180;
+        this.localPlayer.facingX=Math.cos(angleInRadians);
+        this.localPlayer.facingY=Math.sin(angleInRadians);
+        this.localPlayer.x=this.localPlayer.x+(this.localPlayer.dx*this.localPlayer.facingX);
+        this.localPlayer.y=this.localPlayer.y+(this.localPlayer.dy*this.localPlayer.facingY);
+        //vertical
+  				if (this.localPlayer.frameIndex>=this.localPlayer.animationFrames.length-1){
+  					this.localPlayer.frameIndex=2;
+  				} else {
+  					this.localPlayer.frameIndex++;
+  				}
+ 			  break;
       case 32:
-      var angleInRadians = this.localPlayer.rotation * Math.PI / 180;
-      this.localPlayer.facingX=Math.cos(angleInRadians);
-      this.localPlayer.facingY=Math.sin(angleInRadians);
-			this.currentLevel.makeBall(this.localPlayer.x, this.localPlayer.y,this.localPlayer.rotation);
- 			break;
-  			case 'fire':
+        var angleInRadians = this.localPlayer.rotation * Math.PI / 180;
+        this.localPlayer.facingX=Math.cos(angleInRadians);
+        this.localPlayer.facingY=Math.sin(angleInRadians);
+  			this.currentLevel.makeBall(this.localPlayer.x, this.localPlayer.y,this.localPlayer.rotation);
+   			break;
+			case 'fire':
  				this.localPlayer.frameIndex=3;
 				GetKeyCodeVar=0;
  			break;
@@ -307,15 +281,11 @@ Game.prototype.initApp = function(){
   this.c.drawImage(this.playerOne, this.localPlayer.sourceX,this.localPlayer.sourceY,32,32,this.introCount.startX-75,330,this.localPlayer.w,this.localPlayer.h);
   this.c.drawImage(this.playerTwo, this.localPlayer.sourceX,this.localPlayer.sourceY,32,32,this.introCount.startX-75,400,this.localPlayer.w,this.localPlayer.h);
 
-  // this.c.fillRect(this.localPlayer.x,this.localPlayer.y,this.localPlayer.w,this.localPlayer.h);
-  // this.localPlayer.sourceX=Math.floor(this.localPlayer.animationFrames[this.localPlayer.frameIndex] % 7) *32;
-
   if(this.introCount.finalX<this.introCount.startX){
     this.introCount.startX-=40;
   }
   if(this.introCount.startX <= this.introCount.finalX){
     if(this.introCount.textFade <= 1){
-      console.log(this.introCount.textFade);
       var fadeCount = parseFloat(this.introCount.textFade);
       fadeCount += .03;
     this.introCount.textFade = fadeCount.toFixed(2);
@@ -324,6 +294,12 @@ Game.prototype.initApp = function(){
     this.c.fillStyle = "rgba(255, 255, 255, " + this.introCount.textFade + ")";
     this.c.fillText("Player 1",this.introCount.startX, 365);
     this.c.fillText("Player 2",this.introCount.startX, 435);
+
+    this.c.beginPath();
+    this.c.moveTo(70+this.introCount.xMod,60+this.introCount.yMod);
+    this.c.lineTo(80+this.introCount.xMod, 70+this.introCount.yMod);
+    this.c.lineTo(70+this.introCount.xMod, 80+this.introCount.yMod);
+    this.c.fill();
   }
 
   if (this.isTheMouseBeingPressed == true) {
