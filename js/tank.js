@@ -20,5 +20,4 @@ var Tank = function () {
   this.rotationVel = 10;
   this.facingX = 0;
   this.facingY = 0;
-  
 };
