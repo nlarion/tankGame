@@ -88,11 +88,10 @@ Game.prototype.renderCharlee = function(){
  				 this.currentCharlee.frameIndex=0;
 				 break;
 			case 100:
-        this.currentCharlee.orientation = 1;
   			this.currentCharlee.sourceX=0;
 				this.currentCharlee.sourceY=96;
 				this.currentCharlee.rotation += this.currentCharlee.rotationVel;
-        this.currentCharlee.x=this.currentCharlee.x-this.currentCharlee.dx;
+        // this.currentCharlee.y=this.currentCharlee.y-this.currentCharlee.dy;
 				if (this.currentCharlee.frameIndex>=this.currentCharlee.animationFrames.length-1){
 					this.currentCharlee.frameIndex=6;
 				} else {
@@ -104,11 +103,10 @@ Game.prototype.renderCharlee = function(){
 				GetKeyCodeVar=0;
  				break;
  			case 97:
-        this.currentCharlee.orientation = 3;
  				this.currentCharlee.sourceX=0;
 				this.currentCharlee.sourceY=96;
         this.currentCharlee.rotation -= this.currentCharlee.rotationVel;
-				this.currentCharlee.x=this.currentCharlee.x-this.currentCharlee.dx; //horizonal
+				// this.currentCharlee.x=this.currentCharlee.x-this.currentCharlee.dx; //horizonal
 				if (this.currentCharlee.frameIndex>=this.currentCharlee.animationFrames.length-1){
 					this.currentCharlee.frameIndex=7;
 				} else {
@@ -120,7 +118,6 @@ Game.prototype.renderCharlee = function(){
 				GetKeyCodeVar=0;
  			break;
  			case 115:
-        this.currentCharlee.orientation = 2;
  				this.currentCharlee.sourceX=0;
 				this.currentCharlee.sourceY=96;
         var angleInRadians = this.currentCharlee.rotation * Math.PI / 180;
@@ -167,7 +164,7 @@ Game.prototype.renderCharlee = function(){
       var angleInRadians = this.currentCharlee.rotation * Math.PI / 180;
       this.currentCharlee.facingX=Math.cos(angleInRadians);
       this.currentCharlee.facingY=Math.sin(angleInRadians);
-				this.currentLevel.makeBall(this.currentCharlee.x, this.currentCharlee.y,this.currentCharlee.rotation);
+			this.currentLevel.makeBall(this.currentCharlee.x, this.currentCharlee.y,this.currentCharlee.rotation);
  			break;
   			case 'fire':
  				this.currentCharlee.frameIndex=3;
@@ -177,25 +174,27 @@ Game.prototype.renderCharlee = function(){
 		}
     this.getOtherKeyPress = undefined;
   }
+  this.c.fillRect(this.currentCharlee.x,this.currentCharlee.y,this.currentCharlee.w,this.currentCharlee.h);
   this.currentCharlee.sourceX=Math.floor(this.currentCharlee.animationFrames[this.currentCharlee.frameIndex] % 7) *32;
   // this.c.drawImage(this.tileSheet, this.currentCharlee.sourceX,this.currentCharlee.sourceY,32,32,this.currentCharlee.x,this.currentCharlee.y,this.currentCharlee.w,this.currentCharlee.h);
   //this.c.fillRect(this.currentCharlee.x,this.currentCharlee.y,this.currentCharlee.w,this.currentCharlee.h);
   //Convert degrees to radian
-    var angleInRadians = this.currentCharlee.rotation * Math.PI / 180;
+  var angleInRadians = this.currentCharlee.rotation * Math.PI / 180;
 
-    //Set the origin to the center of the image
-    this.c.save();
-    this.c.translate(this.currentCharlee.x - (this.currentCharlee.w / 2), this.currentCharlee.y - (this.currentCharlee.h / 2));
+  //Set the origin to the center of the image
+  this.c.save();
+  this.c.translate(this.currentCharlee.x+25, this.currentCharlee.y+25);
 
-    //Rotate the canvas around the origin
+  //Rotate the canvas around the origin
 
-    this.c.rotate(angleInRadians);
+  this.c.rotate(angleInRadians);
 
-    //draw the image
-    this.c.drawImage(this.tileSheet, this.currentCharlee.sourceX,this.currentCharlee.sourceY,32,32,0,0,this.currentCharlee.w,this.currentCharlee.h);
+  //draw the image
 
-    //reset the canvas
-    this.c.restore();
+  this.c.drawImage(this.tileSheet, this.currentCharlee.sourceX,this.currentCharlee.sourceY,32,32,-25,-25,this.currentCharlee.w,this.currentCharlee.h);
+
+  //reset the canvas
+  this.c.restore();
 }
 
 
@@ -267,7 +266,7 @@ Game.prototype.gameLoop = function(){
     this.c.font = "12px serif";
     this.c.fillStyle = "white";
     this.c.fillText ("Lives: ", 20, canvas.height - 20);
-    this.c.fillText ("sourceX: "+this.currentCharlee.sourceX+" FrameIndex: "+ this.currentCharlee.frameIndex, canvas.width-170,canvas.height -20);
+    this.c.fillText ("x: "+this.currentCharlee.x+" y: "+ this.currentCharlee.y, canvas.width-170,canvas.height -20);
     this.c.fillText ("MathFloor: "+Math.floor(this.currentCharlee.animationFrames[this.currentCharlee.frameIndex] % 12)+" animation frame: "+ this.currentCharlee.animationFrames[this.currentCharlee.frameIndex], canvas.width-170,canvas.height -50);
     for (var i = 0; i < this.currentPlayer.lives-1; i++) {
       this.c.fillStyle = "blue";
@@ -511,7 +510,6 @@ Game.prototype.ballCollide = function(){
         ((this.currentLevel.balls[i].x + this.currentLevel.balls[i].w > this.currentCharlee.x) &&
         (this.currentLevel.balls[i].x > this.currentCharlee.x ) || (this.currentLevel.balls[i].x + this.currentLevel.balls[i].w < this.currentCharlee.x) &&
         (this.currentLevel.balls[i].x < this.currentCharlee.x)) ) {
-          console.log("ball collision testing.", this.currentCharlee.tankLives);
         // this.currentLevel.balls.splice(i, 1);
         this.currentCharlee.tankLives -= 1;
 
