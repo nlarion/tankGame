@@ -164,7 +164,10 @@ Game.prototype.renderCharlee = function(){
 				GetKeyCodeVar=0;
  			break;
       case 32:
-				this.currentLevel.makeBall(this.currentCharlee.x, this.currentCharlee.y, this.currentCharlee.orientation);
+      var angleInRadians = this.currentCharlee.rotation * Math.PI / 180;
+      this.currentCharlee.facingX=Math.cos(angleInRadians);
+      this.currentCharlee.facingY=Math.sin(angleInRadians);
+				this.currentLevel.makeBall(this.currentCharlee.x, this.currentCharlee.y,this.currentCharlee.rotation);
  			break;
   			case 'fire':
  				this.currentCharlee.frameIndex=3;
@@ -182,10 +185,10 @@ Game.prototype.renderCharlee = function(){
 
     //Set the origin to the center of the image
     this.c.save();
-    this.c.translate(this.currentCharlee.x + this.currentCharlee.w / 2, this.currentCharlee.y + this.currentCharlee.h / 2);
+    this.c.translate(this.currentCharlee.x - (this.currentCharlee.w / 2), this.currentCharlee.y - (this.currentCharlee.h / 2));
 
     //Rotate the canvas around the origin
-    console.log(angleInRadians);
+
     this.c.rotate(angleInRadians);
 
     //draw the image
@@ -509,7 +512,7 @@ Game.prototype.ballCollide = function(){
         (this.currentLevel.balls[i].x > this.currentCharlee.x ) || (this.currentLevel.balls[i].x + this.currentLevel.balls[i].w < this.currentCharlee.x) &&
         (this.currentLevel.balls[i].x < this.currentCharlee.x)) ) {
           console.log("ball collision testing.", this.currentCharlee.tankLives);
-        this.currentLevel.balls.splice(i, 1);
+        // this.currentLevel.balls.splice(i, 1);
         this.currentCharlee.tankLives -= 1;
 
         //+0.5 increases the ball speed every time it hits something.
