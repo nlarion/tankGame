@@ -10,9 +10,12 @@ var Tank = function () {
   this.velx = 0;
   this.vely = 0;
   this.radius = 30;
-  this.x = 50;
-  this.y = 50;
+  this.x = 150;
+  this.y = 150;
   this.orientation = 0;
   this.tankLives = 3;
-
+  this.rotation = 33;
+  this.rotationVel = 5;
+  this.facingX = 0;
+  this.facingY = 0;
 };

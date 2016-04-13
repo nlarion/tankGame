@@ -91,7 +91,8 @@ Game.prototype.renderCharlee = function(){
         this.currentCharlee.orientation = 1;
   			this.currentCharlee.sourceX=0;
 				this.currentCharlee.sourceY=96;
-				this.currentCharlee.x=this.currentCharlee.x+this.currentCharlee.dx;
+				this.currentCharlee.rotation += this.currentCharlee.rotationVel;
+        this.currentCharlee.x=this.currentCharlee.x-this.currentCharlee.dx;
 				if (this.currentCharlee.frameIndex>=this.currentCharlee.animationFrames.length-1){
 					this.currentCharlee.frameIndex=6;
 				} else {
@@ -105,7 +106,8 @@ Game.prototype.renderCharlee = function(){
  			case 97:
         this.currentCharlee.orientation = 3;
  				this.currentCharlee.sourceX=0;
-				this.currentCharlee.sourceY=64;
+				this.currentCharlee.sourceY=96;
+        this.currentCharlee.rotation -= this.currentCharlee.rotationVel;
 				this.currentCharlee.x=this.currentCharlee.x-this.currentCharlee.dx; //horizonal
 				if (this.currentCharlee.frameIndex>=this.currentCharlee.animationFrames.length-1){
 					this.currentCharlee.frameIndex=7;
@@ -120,8 +122,16 @@ Game.prototype.renderCharlee = function(){
  			case 115:
         this.currentCharlee.orientation = 2;
  				this.currentCharlee.sourceX=0;
-				this.currentCharlee.sourceY=32;
-				this.currentCharlee.y=this.currentCharlee.y+this.currentCharlee.dy; //vertical
+				this.currentCharlee.sourceY=96;
+        var angleInRadians = this.currentCharlee.rotation * Math.PI / 180;
+        this.currentCharlee.facingX=Math.cos(angleInRadians);
+        this.currentCharlee.facingY=Math.sin(angleInRadians);
+        console.log(this.currentCharlee.facingX);
+        console.log(this.currentCharlee.facingY);
+
+        this.currentCharlee.x=this.currentCharlee.x-(this.currentCharlee.dx*this.currentCharlee.facingX);
+        console.log(this.currentCharlee.x);
+        this.currentCharlee.y=this.currentCharlee.y-(this.currentCharlee.dy*this.currentCharlee.facingY);
 				if (this.currentCharlee.frameIndex>=this.currentCharlee.animationFrames.length-1){
 					this.currentCharlee.frameIndex=2;
 				} else {
@@ -133,10 +143,16 @@ Game.prototype.renderCharlee = function(){
 				GetKeyCodeVar=0;
  			break;
  			case 119:
-        this.currentCharlee.orientation = 0;
- 				this.currentCharlee.sourceX=0;
-				this.currentCharlee.sourceY=0;
-				this.currentCharlee.y=this.currentCharlee.y-this.currentCharlee.dy; //vertical
+      var angleInRadians = this.currentCharlee.rotation * Math.PI / 180;
+      this.currentCharlee.facingX=Math.cos(angleInRadians);
+      this.currentCharlee.facingY=Math.sin(angleInRadians);
+      console.log(this.currentCharlee.facingX);
+      console.log(this.currentCharlee.facingY);
+
+      this.currentCharlee.x=this.currentCharlee.x+(this.currentCharlee.dx*this.currentCharlee.facingX);
+      console.log(this.currentCharlee.x);
+      this.currentCharlee.y=this.currentCharlee.y+(this.currentCharlee.dy*this.currentCharlee.facingY);
+      console.log(this.currentCharlee.y); //vertical
 				if (this.currentCharlee.frameIndex>=this.currentCharlee.animationFrames.length-1){
 					this.currentCharlee.frameIndex=2;
 				} else {
@@ -159,9 +175,24 @@ Game.prototype.renderCharlee = function(){
     this.getOtherKeyPress = undefined;
   }
   this.currentCharlee.sourceX=Math.floor(this.currentCharlee.animationFrames[this.currentCharlee.frameIndex] % 7) *32;
-  this.c.drawImage(this.tileSheet, this.currentCharlee.sourceX,this.currentCharlee.sourceY,32,32,this.currentCharlee.x,this.currentCharlee.y,this.currentCharlee.w,this.currentCharlee.h);
+  // this.c.drawImage(this.tileSheet, this.currentCharlee.sourceX,this.currentCharlee.sourceY,32,32,this.currentCharlee.x,this.currentCharlee.y,this.currentCharlee.w,this.currentCharlee.h);
   //this.c.fillRect(this.currentCharlee.x,this.currentCharlee.y,this.currentCharlee.w,this.currentCharlee.h);
+  //Convert degrees to radian
+    var angleInRadians = this.currentCharlee.rotation * Math.PI / 180;
 
+    //Set the origin to the center of the image
+    this.c.save();
+    this.c.translate(this.currentCharlee.x + this.currentCharlee.w / 2, this.currentCharlee.y + this.currentCharlee.h / 2);
+
+    //Rotate the canvas around the origin
+    console.log(angleInRadians);
+    this.c.rotate(angleInRadians);
+
+    //draw the image
+    this.c.drawImage(this.tileSheet, this.currentCharlee.sourceX,this.currentCharlee.sourceY,32,32,0,0,this.currentCharlee.w,this.currentCharlee.h);
+
+    //reset the canvas
+    this.c.restore();
 }
 
 
