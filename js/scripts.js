@@ -356,7 +356,6 @@ Game.prototype.collide = function(){
   }
   for(var i=0; i < this.currentLevel.bricks.length; i++){
     if(this.checkCollision(this.currentCharlee, this.currentLevel.bricks[i])){
-      // console.log('collision');
       var tankY = this.currentCharlee.y;
       var tankX = this.currentCharlee.x;
       var tankW = this.currentCharlee.w;
@@ -366,29 +365,35 @@ Game.prototype.collide = function(){
       var brickX = this.currentLevel.bricks[i].x;
       var brickW = this.currentLevel.bricks[i].w;
       var brickH = this.currentLevel.bricks[i].h;
-      console.log("tanky "+ tankY + " tankx " + tankX + " tankw " + tankW + " tankH " +tankH);
-      console.log("bricky "+ brickY + " brickx " + brickX + " brickw " + parseInt(brickH));
+      var bringIn = 5;
 
-      // if ( (this.currentCharlee.y + this.currentCharlee.h > this.currentLevel.bricks[i].y) &&
-      //   (this.currentCharlee.y < this.currentLevel.bricks[i].y + this.currentLevel.bricks[i].h) &&
-      //   ((this.currentCharlee.x + this.currentCharlee.w > this.currentLevel.bricks[i].x) &&
-      //   (this.currentCharlee.x > this.currentLevel.bricks[i].x ) || (this.currentCharlee.x + this.currentCharlee.w < this.currentLevel.bricks[i].x) &&
-      //   (this.currentCharlee.x < this.currentLevel.bricks[i].x)) ) {
       if (
-        ( ((tankX > brickX) && (tankX < (brickX + brickW))) || ( ((tankX + tankW) > brickX) && ((tankX + tankW) < (brickX + brickW)) ) )
+        ( ((tankX > brickX) && (tankX < ((brickX + brickW)-bringIn))) || ( ((tankX + tankW) > brickX) && ((tankX + tankW) < ((brickX + brickW)-bringIn)) ) )
         && ( (tankY < (brickY + brickH)) && (tankY > (brickY + (brickH / 2))) )
-
-
         ){
-        console.log("Im tripping");
-
+        //top
         this.currentCharlee.y = this.currentCharlee.y+5;
-        //this.currentCharlee.dx = 0;
-        //this.currentCharlee.dy = 0;//+0.5 increases the ball speed every time it hits something.
-        //try and make the ball do something here.
-      } else {
-        console.log("test");
+      }
+      else if (
+        ( ((tankX > brickX) && (tankX < ((brickX + brickW)-bringIn))) || ( ((tankX + tankW) > brickX) && ((tankX + tankW) < ((brickX + brickW)-bringIn)) ) )
+        && ( ((tankY+tankH) > brickY) && ((tankY+tankH) < (brickY + (brickH / 2))) )
+      ){
+        //bottom
         this.currentCharlee.y = this.currentCharlee.y-5;
+      }
+      else if (
+        ( ((tankX > (brickX + (brickW / 2)) ) && (tankX < (brickX + brickW))) )
+        && ( ( (tankY < (brickY + brickH)) && (tankY > (brickY)) ) || ( ((tankY+tankH) < (brickY + brickH)) && ((tankY+tankH) > (brickY)) ) )
+      ) {
+        //right
+        this.currentCharlee.x = this.currentCharlee.x+5;
+      }
+      else if (
+        ( (( (tankX + tankW) > (brickX)) ) && ((tankX + tankW) < (brickX + (brickW/2))) )
+        && ( ( (tankY < (brickY + brickH)) && (tankY > (brickY)) ) || ( ((tankY+tankH) < (brickY + brickH)) && ((tankY+tankH) > (brickY)) ) )
+      ) {
+        //left
+        this.currentCharlee.x = this.currentCharlee.x-5;
       }
     }
   }
@@ -422,14 +427,14 @@ Game.prototype.testWalls = function(){
     }
   }
   //Test tank walls
-  if(this.currentCharlee.x > canvas.width-100){
-    this.currentCharlee.x = canvas.width-100;
+  if(this.currentCharlee.x > canvas.width-this.currentCharlee.w){
+    this.currentCharlee.x = canvas.width-this.currentCharlee.w;
   }
   if(this.currentCharlee.x < 0){
     this.currentCharlee.x = 0;
   }
-  if(this.currentCharlee.y > canvas.height-100){
-    this.currentCharlee.y = canvas.height-100;
+  if(this.currentCharlee.y > canvas.height-this.currentCharlee.h){
+    this.currentCharlee.y = canvas.height-this.currentCharlee.h;
   }
 
   if(this.currentCharlee.y < 0){
