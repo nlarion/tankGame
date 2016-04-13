@@ -2,11 +2,14 @@
 var LevelConstruct = function(){
   return [
     [
-      ['Player',200,550,250,65,15,'red',0],
-      ['Inert',475,0,400,50,100,'white',10, ""],
-      ['Inert',475,0,100,50,100,'white',10, ""],
-      ['Inert',250,0,275,100,50,'white',10, ""],
-      ['Inert',650,0,275,100,50,'white',10, ""],
+      ['Inert',475,0,375,50,75,'white',10, ""],
+      ['Inert',475,0,150,50,75,'white',10, ""],
+      ['Inert',275,0,275,100,50,'white',10, ""],
+      ['Inert',625,0,275,100,50,'white',10, ""],
+      ['Inert',0,0,150,50,300,'white',10, ""],
+      ['Inert',950,0,150,50,300,'white',10, ""],
+      ['Inert',325,0,0,375,50,'white',10, ""],
+      ['Inert',325,0,550,375,50,'white',10, ""],
     ]
   ];
 }
@@ -26,10 +29,12 @@ var Level = function(currentLevel) {
 }
 
 Level.prototype.makeBall = function(x,y,rotation){
+  var radians = rotation * Math.PI / 180;
   var ballXvel = 5*Math.cos(Math.PI*(rotation)/180);
+  console.log(ballXvel);
 	var ballYvel = 5*Math.sin(Math.PI*(rotation)/180);
-	var ballX	= x;
-	var ballY = y;
+	var ballX	= (x +22) + 39*Math.cos(radians);
+	var ballY = (y+17) + 39*Math.sin(radians);
 
   // if(orientation === 0) {
   //   console.log("up");
@@ -61,7 +66,7 @@ Level.prototype.makeBall = function(x,y,rotation){
   //
   // }
 
-  var ball = new Ball(x,y,12,12,ballXvel,ballYvel,"white");
+  var ball = new Ball(ballX,ballY,12,12,ballXvel,ballYvel,"white");
   ball.launched = true;
   this.balls.push(ball);
 };

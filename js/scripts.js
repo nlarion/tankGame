@@ -18,7 +18,7 @@ var Game = function(){
   this.level = 1;
   this.currentLevel = new Level(1);
   this.currentPlayer = new Player();
-  this.currentCharlee = new Tank();
+  this.localPlayer = new Tank();
   this.firebase = new Firebase('https://epicodus-tank.firebaseio.com/');
 }
 
@@ -30,17 +30,8 @@ Game.prototype.gameManager = function(){
   case STATE_LOADING:
     this.firebase.set({game: 'Game'});
     //load assets
-    this.audio = new SeamlessLoop();
-    this.audio.addUri('sounds/breakoutLoop1.mp3',5350,"loop1");
-    this.audio.addUri('sounds/breakoutLoop2.mp3',18700,"loop2");
-    this.audio.addUri('sounds/breakoutLoop3.mp3',2720,"loop3");
-    this.audio.addUri('sounds/breakoutLoop4.mp3',2700,"loop4");
-    this.audio.addUri('sounds/breakoutLoop5.mp3',7990,"loop5");
-    this.sounds = {gameOver: new Audio('sounds/breakoutGameOver.mp3'), normalHit: new Audio('sounds/SG280_BD_11.mp3'), lightHit: new Audio('sounds/SG280_Bongo_08.mp3'), powerUp: new Audio('sounds/SG280_Cym_01.mp3'), steady: new Audio('sounds/SG280_Tom_02.mp3'), mediumHit: new Audio('sounds/SG280_SD_02.mp3')};
-    // this.audio = new Audio('sounds/breakoutLoop1.mp3');
-    //tileSheet was here
-    this.tileSheet = new Image();
-    this.tileSheet.src = "images/redtank.png"; // load all assets now so
+    this.playerOne = new Image();
+    this.playerOne.src = "images/redtank.png"; // load all assets now so
     var t = this;
     this.$canvas.mousemove(function(e){
       t.currentPlayer.x = e.offsetX-((t.currentLevel.bricks[0].w)/2);
@@ -78,113 +69,112 @@ Game.prototype.gameManager = function(){
   }
 };
 
-Game.prototype.renderCharlee = function(){
+Game.prototype.renderLocalPlayer = function(){
   if(this.getOtherKeyPress){
     console.log(this.getOtherKeyPress);
-    //console.log(this.currentCharlee);
+    //console.log(this.localPlayer);
     switch (this.getOtherKeyPress.keyCode) {
 
 			case undefined:
       	//console.log(this.getOtherKeyPress);
- 				 this.currentCharlee.frameIndex=0;
+ 				 this.localPlayer.frameIndex=0;
 				 break;
 			case 100:
-  			this.currentCharlee.sourceX=0;
-				this.currentCharlee.sourceY=96;
-				this.currentCharlee.rotation += this.currentCharlee.rotationVel;
-        // this.currentCharlee.y=this.currentCharlee.y-this.currentCharlee.dy;
-				if (this.currentCharlee.frameIndex>=this.currentCharlee.animationFrames.length-1){
-					this.currentCharlee.frameIndex=6;
+  			this.localPlayer.sourceX=0;
+				this.localPlayer.sourceY=96;
+				this.localPlayer.rotation += this.localPlayer.rotationVel;
+        // this.localPlayer.y=this.localPlayer.y-this.localPlayer.dy;
+				if (this.localPlayer.frameIndex>=this.localPlayer.animationFrames.length-1){
+					this.localPlayer.frameIndex=0;
 				} else {
-					this.currentCharlee.frameIndex++;
+					this.localPlayer.frameIndex++;
 				}
  				break;
 			case 'rightstop':
- 				this.currentCharlee.frameIndex=3;
+ 				this.localPlayer.frameIndex=0;
 				GetKeyCodeVar=0;
  				break;
  			case 97:
- 				this.currentCharlee.sourceX=0;
-				this.currentCharlee.sourceY=96;
-        this.currentCharlee.rotation -= this.currentCharlee.rotationVel;
-				// this.currentCharlee.x=this.currentCharlee.x-this.currentCharlee.dx; //horizonal
-				if (this.currentCharlee.frameIndex>=this.currentCharlee.animationFrames.length-1){
-					this.currentCharlee.frameIndex=7;
+ 				this.localPlayer.sourceX=0;
+				this.localPlayer.sourceY=96;
+        this.localPlayer.rotation -= this.localPlayer.rotationVel;
+				// this.localPlayer.x=this.localPlayer.x-this.localPlayer.dx; //horizonal
+				if (this.localPlayer.frameIndex>=this.localPlayer.animationFrames.length-1){
+					this.localPlayer.frameIndex=0;
 				} else {
-					this.currentCharlee.frameIndex++;
+					this.localPlayer.frameIndex++;
 				}
  			break;
  			case 'leftstop':
- 				this.currentCharlee.frameIndex=3;
+ 				this.localPlayer.frameIndex=0;
 				GetKeyCodeVar=0;
  			break;
  			case 115:
- 				this.currentCharlee.sourceX=0;
-				this.currentCharlee.sourceY=96;
-        var angleInRadians = this.currentCharlee.rotation * Math.PI / 180;
-        this.currentCharlee.facingX=Math.cos(angleInRadians);
-        this.currentCharlee.facingY=Math.sin(angleInRadians);
-        console.log(this.currentCharlee.facingX);
-        console.log(this.currentCharlee.facingY);
+ 				this.localPlayer.sourceX=0;
+				this.localPlayer.sourceY=96;
+        var angleInRadians = this.localPlayer.rotation * Math.PI / 180;
+        this.localPlayer.facingX=Math.cos(angleInRadians);
+        this.localPlayer.facingY=Math.sin(angleInRadians);
+        console.log(this.localPlayer.facingX);
+        console.log(this.localPlayer.facingY);
 
-        this.currentCharlee.x=this.currentCharlee.x-(this.currentCharlee.dx*this.currentCharlee.facingX);
-        console.log(this.currentCharlee.x);
-        this.currentCharlee.y=this.currentCharlee.y-(this.currentCharlee.dy*this.currentCharlee.facingY);
-				if (this.currentCharlee.frameIndex>=this.currentCharlee.animationFrames.length-1){
-					this.currentCharlee.frameIndex=2;
+        this.localPlayer.x=this.localPlayer.x-(this.localPlayer.dx*this.localPlayer.facingX);
+        console.log(this.localPlayer.x);
+        this.localPlayer.y=this.localPlayer.y-(this.localPlayer.dy*this.localPlayer.facingY);
+				if (this.localPlayer.frameIndex>=this.localPlayer.animationFrames.length-1){
+					this.localPlayer.frameIndex=0;
 				} else {
-					this.currentCharlee.frameIndex++;
+					this.localPlayer.frameIndex++;
 				}
  				break;
  			case 'downstop':
- 				this.currentCharlee.frameIndex=3;
+ 				this.localPlayer.frameIndex=0;
 				GetKeyCodeVar=0;
  			break;
  			case 119:
-      var angleInRadians = this.currentCharlee.rotation * Math.PI / 180;
-      this.currentCharlee.facingX=Math.cos(angleInRadians);
-      this.currentCharlee.facingY=Math.sin(angleInRadians);
-      console.log(this.currentCharlee.facingX);
-      console.log(this.currentCharlee.facingY);
+      var angleInRadians = this.localPlayer.rotation * Math.PI / 180;
+      this.localPlayer.facingX=Math.cos(angleInRadians);
+      this.localPlayer.facingY=Math.sin(angleInRadians);
+      console.log(this.localPlayer.facingX);
+      console.log(this.localPlayer.facingY);
 
-      this.currentCharlee.x=this.currentCharlee.x+(this.currentCharlee.dx*this.currentCharlee.facingX);
-      console.log(this.currentCharlee.x);
-      this.currentCharlee.y=this.currentCharlee.y+(this.currentCharlee.dy*this.currentCharlee.facingY);
-      console.log(this.currentCharlee.y); //vertical
-				if (this.currentCharlee.frameIndex>=this.currentCharlee.animationFrames.length-1){
-					this.currentCharlee.frameIndex=2;
+      this.localPlayer.x=this.localPlayer.x+(this.localPlayer.dx*this.localPlayer.facingX);
+      console.log(this.localPlayer.x);
+      this.localPlayer.y=this.localPlayer.y+(this.localPlayer.dy*this.localPlayer.facingY);
+      console.log(this.localPlayer.y); //vertical
+				if (this.localPlayer.frameIndex>=this.localPlayer.animationFrames.length-1){
+					this.localPlayer.frameIndex=0;
 				} else {
-					this.currentCharlee.frameIndex++;
+					this.localPlayer.frameIndex++;
 				}
  			break;
   			case 'upstop':
- 				this.currentCharlee.frameIndex=3;
+ 				this.localPlayer.frameIndex=0;
 				GetKeyCodeVar=0;
  			break;
       case 32:
-      var angleInRadians = this.currentCharlee.rotation * Math.PI / 180;
-      this.currentCharlee.facingX=Math.cos(angleInRadians);
-      this.currentCharlee.facingY=Math.sin(angleInRadians);
-			this.currentLevel.makeBall(this.currentCharlee.x, this.currentCharlee.y,this.currentCharlee.rotation);
+      var angleInRadians = this.localPlayer.rotation * Math.PI / 180;
+      this.localPlayer.facingX=Math.cos(angleInRadians);
+      this.localPlayer.facingY=Math.sin(angleInRadians);
+			this.currentLevel.makeBall(this.localPlayer.x, this.localPlayer.y,this.localPlayer.rotation);
  			break;
   			case 'fire':
- 				this.currentCharlee.frameIndex=3;
 				GetKeyCodeVar=0;
  			break;
 
 		}
     this.getOtherKeyPress = undefined;
   }
-  this.c.fillRect(this.currentCharlee.x,this.currentCharlee.y,this.currentCharlee.w,this.currentCharlee.h);
-  this.currentCharlee.sourceX=Math.floor(this.currentCharlee.animationFrames[this.currentCharlee.frameIndex] % 7) *32;
-  // this.c.drawImage(this.tileSheet, this.currentCharlee.sourceX,this.currentCharlee.sourceY,32,32,this.currentCharlee.x,this.currentCharlee.y,this.currentCharlee.w,this.currentCharlee.h);
-  //this.c.fillRect(this.currentCharlee.x,this.currentCharlee.y,this.currentCharlee.w,this.currentCharlee.h);
+  // this.c.fillRect(this.localPlayer.x,this.localPlayer.y,this.localPlayer.w,this.localPlayer.h);
+  this.localPlayer.sourceX=Math.floor(this.localPlayer.animationFrames[this.localPlayer.frameIndex] % 7) *32;
+  // this.c.drawImage(this.playerOne, this.localPlayer.sourceX,this.localPlayer.sourceY,32,32,this.localPlayer.x,this.localPlayer.y,this.localPlayer.w,this.localPlayer.h);
+  //this.c.fillRect(this.localPlayer.x,this.localPlayer.y,this.localPlayer.w,this.localPlayer.h);
   //Convert degrees to radian
-  var angleInRadians = this.currentCharlee.rotation * Math.PI / 180;
+  var angleInRadians = this.localPlayer.rotation * Math.PI / 180;
 
   //Set the origin to the center of the image
   this.c.save();
-  this.c.translate(this.currentCharlee.x+25, this.currentCharlee.y+25);
+  this.c.translate(this.localPlayer.x+25, this.localPlayer.y+25);
 
   //Rotate the canvas around the origin
 
@@ -192,7 +182,7 @@ Game.prototype.renderCharlee = function(){
 
   //draw the image
 
-  this.c.drawImage(this.tileSheet, this.currentCharlee.sourceX,this.currentCharlee.sourceY,32,32,-25,-25,this.currentCharlee.w,this.currentCharlee.h);
+  this.c.drawImage(this.playerOne, this.localPlayer.sourceX,this.localPlayer.sourceY,32,32,-25,-25,this.localPlayer.w,this.localPlayer.h);
 
   //reset the canvas
   this.c.restore();
@@ -239,7 +229,6 @@ Game.prototype.gameLoop = function(){
     var data = snapshot.val();
     })
   if (this.firstRun) {
-    this.audio.start("loop1");
     this.firstRun = false;
   }
   if(this.getKeyPress){
@@ -259,38 +248,29 @@ Game.prototype.gameLoop = function(){
   this.ballCollide();
   this.drawBricks();
   this.drawRenderBalls();
-  this.renderCharlee();
+  this.renderLocalPlayer();
   this.updateFirebase();
 
 };
 
 
 Game.prototype.updateFirebase = function(){
-  this.firebase.child('game').set({x: this.currentCharlee.x, y: this.currentCharlee.y});
+  this.firebase.child('game').set({x: this.localPlayer.x, y: this.localPlayer.y});
 }
 
-// this.currentCharlee.sourceX=Math.floor(this.currentCharlee.animationFrames[this.currentCharlee.frameIndex] % 12) *50;
+// this.localPlayer.sourceX=Math.floor(this.localPlayer.animationFrames[this.localPlayer.frameIndex] % 12) *50;
 Game.prototype.clearCanvasAndDisplayDetails = function(){
-  this.c.fillStyle = "gray";
+  this.c.fillStyle = "#54717A";
   this.c.fillRect(0,0,canvas.width,canvas.height);
   this.c.font = "12px serif";
   this.c.fillStyle = "white";
-  this.c.fillText ("Lives: ", 20, canvas.height - 20);
-  this.c.fillText ("sourceX: "+this.currentCharlee.sourceX+" FrameIndex: "+ this.currentCharlee.frameIndex, canvas.width-170,canvas.height -20);
-  this.c.fillText ("MathFloor: "+Math.floor(this.currentCharlee.animationFrames[this.currentCharlee.frameIndex] % 12)+" animation frame: "+ this.currentCharlee.animationFrames[this.currentCharlee.frameIndex], canvas.width-170,canvas.height -50);
-  for (var i = 0; i < this.currentPlayer.lives-1; i++) {
-    this.c.fillStyle = "blue";
-    this.c.beginPath();
-    this.c.arc((i*20)+60,canvas.height-25,this.currentLevel.balls[0].w/2,0,Math.PI*2,true);
-    this.c.closePath();
-    this.c.fill();
+  this.c.fillText ("sourceX: "+this.localPlayer.sourceX+" FrameIndex: "+ this.localPlayer.frameIndex, canvas.width-170,canvas.height -20);
+  this.c.fillText ("MathFloor: "+Math.floor(this.localPlayer.animationFrames[this.localPlayer.frameIndex] % 12)+" animation frame: "+ this.localPlayer.animationFrames[this.localPlayer.frameIndex], canvas.width-170,canvas.height -50);
     // this.c.fillRect((i*20)+60,canvas.height -30,10,10);
-  }
 }
 
 Game.prototype.initApp = function(){
-  if (this.firstRun) {
-    this.audio.start("loop5");
+  if (this.firstRun) {w
     this.firstRun = false;
   }
   fadeIn = this.introCount + 30;
@@ -320,7 +300,7 @@ Game.prototype.initApp = function(){
 }
 
 Game.prototype.drawBricks = function(){
-  this.c.fillStyle ="red";
+  this.c.fillStyle ="#144252";
   for (var i = 0; i < this.currentLevel.bricks.length; i++) {
     this.currentLevel.bricks[i].player ? false : this.currentLevel.bricks[i].y +=(200-this.currentLevel.bricks[i].y)*.1; //simple easing.
     if(this.currentLevel.bricks[i].player){
@@ -398,11 +378,11 @@ Game.prototype.collide = function(){
     }
   }
   for(var i=0; i < this.currentLevel.bricks.length; i++){
-    if(this.checkCollision(this.currentCharlee, this.currentLevel.bricks[i])){
-      var tankY = this.currentCharlee.y;
-      var tankX = this.currentCharlee.x;
-      var tankW = this.currentCharlee.w;
-      var tankH = this.currentCharlee.h;
+    if(this.checkCollision(this.localPlayer, this.currentLevel.bricks[i])){
+      var tankY = this.localPlayer.y;
+      var tankX = this.localPlayer.x;
+      var tankW = this.localPlayer.w;
+      var tankH = this.localPlayer.h;
 
       var brickY = this.currentLevel.bricks[i].y;
       var brickX = this.currentLevel.bricks[i].x;
@@ -415,28 +395,28 @@ Game.prototype.collide = function(){
         && ( (tankY < (brickY + brickH)) && (tankY > (brickY + (brickH / 2))) )
         ){
         //top
-        this.currentCharlee.y = this.currentCharlee.y+5;
+        this.localPlayer.y = this.localPlayer.y+5;
       }
       else if (
         ( ((tankX > brickX) && (tankX < ((brickX + brickW)-bringIn))) || ( ((tankX + tankW) > brickX) && ((tankX + tankW) < ((brickX + brickW)-bringIn)) ) )
         && ( ((tankY+tankH) > brickY) && ((tankY+tankH) < (brickY + (brickH / 2))) )
       ){
         //bottom
-        this.currentCharlee.y = this.currentCharlee.y-5;
+        this.localPlayer.y = this.localPlayer.y-5;
       }
       else if (
         ( ((tankX > (brickX + (brickW / 2)) ) && (tankX < (brickX + brickW))) )
         && ( ( (tankY < (brickY + brickH)) && (tankY > (brickY)) ) || ( ((tankY+tankH) < (brickY + brickH)) && ((tankY+tankH) > (brickY)) ) )
       ) {
         //right
-        this.currentCharlee.x = this.currentCharlee.x+5;
+        this.localPlayer.x = this.localPlayer.x+5;
       }
       else if (
         ( (( (tankX + tankW) > (brickX)) ) && ((tankX + tankW) < (brickX + (brickW/2))) )
         && ( ( (tankY < (brickY + brickH)) && (tankY > (brickY)) ) || ( ((tankY+tankH) < (brickY + brickH)) && ((tankY+tankH) > (brickY)) ) )
       ) {
         //left
-        this.currentCharlee.x = this.currentCharlee.x-5;
+        this.localPlayer.x = this.localPlayer.x-5;
       }
     }
   }
@@ -470,18 +450,18 @@ Game.prototype.testWalls = function(){
     }
   }
   //Test tank walls
-  if(this.currentCharlee.x > canvas.width-this.currentCharlee.w){
-    this.currentCharlee.x = canvas.width-this.currentCharlee.w;
+  if(this.localPlayer.x > canvas.width-this.localPlayer.w){
+    this.localPlayer.x = canvas.width-this.localPlayer.w;
   }
-  if(this.currentCharlee.x < 0){
-    this.currentCharlee.x = 0;
+  if(this.localPlayer.x < 0){
+    this.localPlayer.x = 0;
   }
-  if(this.currentCharlee.y > canvas.height-this.currentCharlee.h){
-    this.currentCharlee.y = canvas.height-this.currentCharlee.h;
+  if(this.localPlayer.y > canvas.height-this.localPlayer.h){
+    this.localPlayer.y = canvas.height-this.localPlayer.h;
   }
 
-  if(this.currentCharlee.y < 0){
-    this.currentCharlee.y = 0;
+  if(this.localPlayer.y < 0){
+    this.localPlayer.y = 0;
   }
 };
 
@@ -490,7 +470,7 @@ Game.prototype.drawRenderBalls = function(){
     for (var i = 0; i < this.currentLevel.balls.length; i++) {
       if(!this.currentLevel.balls[i].launched) {
         this.currentLevel.balls[i].x = (this.currentLevel.bricks[0].x+((this.currentLevel.bricks[0].w/2)-(this.currentLevel.balls[i].w)/2));
-        this.c.fillStyle = "blue";
+        this.c.fillStyle = "#D9D9D9";
         this.c.beginPath();
         this.c.arc(this.currentLevel.balls[i].x+(this.currentLevel.balls[i].w/2),this.currentLevel.balls[i].y+(this.currentLevel.balls[i].w/2),this.currentLevel.balls[i].w/2,0,Math.PI*2,true);
         this.c.closePath();
@@ -498,7 +478,7 @@ Game.prototype.drawRenderBalls = function(){
       } else {
         this.currentLevel.balls[i].x += this.currentLevel.balls[i].velx;
         this.currentLevel.balls[i].y += this.currentLevel.balls[i].vely;
-        this.c.fillStyle = "blue";
+        this.c.fillStyle = "#D9D9D9";
         this.c.beginPath();
         this.c.arc(this.currentLevel.balls[i].x+(this.currentLevel.balls[i].w/2),this.currentLevel.balls[i].y+(this.currentLevel.balls[i].w/2),this.currentLevel.balls[i].w/2,0,Math.PI*2,true);
         this.c.closePath();
@@ -514,14 +494,15 @@ Game.prototype.drawRenderBalls = function(){
 
 Game.prototype.ballCollide = function(){
   for (var i = 0; i < this.currentLevel.balls.length; i++) {
-    if ( this.checkCollision(this.currentLevel.balls[i],this.currentCharlee) ) { //left and right of ball
-      if ( (this.currentLevel.balls[i].y + this.currentLevel.balls[i].h > this.currentCharlee.y) &&
-        (this.currentLevel.balls[i].y < this.currentCharlee.y + this.currentCharlee.h) &&
-        ((this.currentLevel.balls[i].x + this.currentLevel.balls[i].w > this.currentCharlee.x) &&
-        (this.currentLevel.balls[i].x > this.currentCharlee.x ) || (this.currentLevel.balls[i].x + this.currentLevel.balls[i].w < this.currentCharlee.x) &&
-        (this.currentLevel.balls[i].x < this.currentCharlee.x)) ) {
-        // this.currentLevel.balls.splice(i, 1);
-        this.currentCharlee.tankLives -= 1;
+    if ( this.checkCollision(this.currentLevel.balls[i],this.localPlayer) ) { //left and right of ball
+      if ( (this.currentLevel.balls[i].y + this.currentLevel.balls[i].h > this.localPlayer.y) &&
+        (this.currentLevel.balls[i].y < this.localPlayer.y + this.localPlayer.h) &&
+        ((this.currentLevel.balls[i].x + this.currentLevel.balls[i].w > this.localPlayer.x) &&
+        (this.currentLevel.balls[i].x > this.localPlayer.x ) || (this.currentLevel.balls[i].x + this.currentLevel.balls[i].w < this.localPlayer.x) &&
+        (this.currentLevel.balls[i].x < this.localPlayer.x)) ) {
+        this.currentLevel.balls.splice(i, 1);
+        console.log(this.localPlayer.tankLives);
+        this.localPlayer.tankLives -= 1;
 
         //+0.5 increases the ball speed every time it hits something.
         //try and make the ball do something here.
@@ -533,12 +514,12 @@ Game.prototype.ballCollide = function(){
     }
   }
   for(var i=0; i < this.currentLevel.bricks.length; i++){
-    if(this.checkCollision(this.currentCharlee, this.currentLevel.bricks[i])){
+    if(this.checkCollision(this.localPlayer, this.currentLevel.bricks[i])){
       // console.log('collision');
-      var tankY = this.currentCharlee.y;
-      var tankX = this.currentCharlee.x;
-      var tankW = this.currentCharlee.w;
-      var tankH = this.currentCharlee.h;
+      var tankY = this.localPlayer.y;
+      var tankX = this.localPlayer.x;
+      var tankW = this.localPlayer.w;
+      var tankH = this.localPlayer.h;
 
       var brickY = this.currentLevel.bricks[i].y;
       var brickX = this.currentLevel.bricks[i].x;
@@ -547,11 +528,11 @@ Game.prototype.ballCollide = function(){
       console.log("tanky "+ tankY + " tankx " + tankX + " tankw " + tankW + " tankH " +tankH);
       console.log("bricky "+ brickY + " brickx " + brickX + " brickw " + parseInt(brickH));
 
-      // if ( (this.currentCharlee.y + this.currentCharlee.h > this.currentLevel.bricks[i].y) &&
-      //   (this.currentCharlee.y < this.currentLevel.bricks[i].y + this.currentLevel.bricks[i].h) &&
-      //   ((this.currentCharlee.x + this.currentCharlee.w > this.currentLevel.bricks[i].x) &&
-      //   (this.currentCharlee.x > this.currentLevel.bricks[i].x ) || (this.currentCharlee.x + this.currentCharlee.w < this.currentLevel.bricks[i].x) &&
-      //   (this.currentCharlee.x < this.currentLevel.bricks[i].x)) ) {
+      // if ( (this.localPlayer.y + this.localPlayer.h > this.currentLevel.bricks[i].y) &&
+      //   (this.localPlayer.y < this.currentLevel.bricks[i].y + this.currentLevel.bricks[i].h) &&
+      //   ((this.localPlayer.x + this.localPlayer.w > this.currentLevel.bricks[i].x) &&
+      //   (this.localPlayer.x > this.currentLevel.bricks[i].x ) || (this.localPlayer.x + this.localPlayer.w < this.currentLevel.bricks[i].x) &&
+      //   (this.localPlayer.x < this.currentLevel.bricks[i].x)) ) {
       if (
         ( ((tankX > brickX) && (tankX < (brickX + brickW))) || ( ((tankX + tankW) > brickX) && ((tankX + tankW) < (brickX + brickW)) ) )
         && ( (tankY < (brickY + brickH)) && (tankY > (brickY + (brickH / 2))) )
@@ -560,13 +541,13 @@ Game.prototype.ballCollide = function(){
         ){
         console.log("Im tripping");
 
-        this.currentCharlee.y = this.currentCharlee.y+5;
-        //this.currentCharlee.dx = 0;
-        //this.currentCharlee.dy = 0;//+0.5 increases the ball speed every time it hits something.
+        this.localPlayer.y = this.localPlayer.y+5;
+        //this.localPlayer.dx = 0;
+        //this.localPlayer.dy = 0;//+0.5 increases the ball speed every time it hits something.
         //try and make the ball do something here.
       } else {
         console.log("test");
-        this.currentCharlee.y = this.currentCharlee.y-5;
+        this.localPlayer.y = this.localPlayer.y-5;
       }
     }
   }
