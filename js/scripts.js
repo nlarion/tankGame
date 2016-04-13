@@ -520,7 +520,8 @@ Game.prototype.ballCollide = function(){
         ((this.currentLevel.balls[i].x + this.currentLevel.balls[i].w > this.currentCharlee.x) &&
         (this.currentLevel.balls[i].x > this.currentCharlee.x ) || (this.currentLevel.balls[i].x + this.currentLevel.balls[i].w < this.currentCharlee.x) &&
         (this.currentLevel.balls[i].x < this.currentCharlee.x)) ) {
-        // this.currentLevel.balls.splice(i, 1);
+        this.currentLevel.balls.splice(i, 1);
+        console.log(this.currentCharlee.tankLives);
         this.currentCharlee.tankLives -= 1;
 
         //+0.5 increases the ball speed every time it hits something.
