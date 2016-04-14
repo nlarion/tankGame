@@ -20,8 +20,8 @@ var Game = function(){
   this.localPlayer;
   this.remotePlayer;
   this.explosion = new Explosion();
-  //this.firebase = new Firebase('https://epicodus-tank.firebaseio.com/');
-  this.firebase = new Firebase('https://local-tank.firebaseio.com/');
+  this.firebase = new Firebase('https://epicodus-tank.firebaseio.com/');
+  //this.firebase = new Firebase('https://local-tank.firebaseio.com/');
 }
 
 Game.prototype.gameManager = function(){
@@ -33,12 +33,9 @@ Game.prototype.gameManager = function(){
     this.firebase.set({game: 'Game'});
     //load assets
     this.audio = new SeamlessLoop();
-    this.audio.addUri('sounds/breakoutLoop1.mp3',5350,"loop1");
-    this.audio.addUri('sounds/breakoutLoop2.mp3',18700,"loop2");
-    this.audio.addUri('sounds/breakoutLoop3.mp3',2720,"loop3");
-    this.audio.addUri('sounds/breakoutLoop4.mp3',2700,"loop4");
-    this.audio.addUri('sounds/breakoutLoop5.mp3',7990,"loop5");
-    this.sounds = {death: new Audio('sounds/deathExplosion.mp3'), death2: new Audio('sounds/howieScream.mp3'), shoot: new Audio('sounds/new-shoot.mp3')};
+    this.audio.addUri('sounds/tankIntro.mp3',33000,"loop2");
+    this.audio.addUri('sounds/tankLoop.mp3',38000, "loop6");
+    this.sounds = {death: new Audio('sounds/deathExplosion.mp3'), death2: new Audio('sounds/howieScream.mp3')};
     // this.audio = new Audio('sounds/breakoutLoop1.mp3');
     //playerOne was here
     this.playerOne = new Image();
@@ -46,11 +43,14 @@ Game.prototype.gameManager = function(){
     this.disabledTank = new Image();
     this.explosionImg = new Image();
     this.logo = new Image();
-    this.playerOne.src = "images/redtank.png";
-    this.playerTwo.src = "images/bluetank.png";
-    this.disabledTank.src = "images/disabledtank.png";
+    this.heart = new Image();
+    this.playerOne.src = "images/redtank.png"; // load all assets now so
+    this.playerTwo.src = "images/bluetank.png"; // load all assets now so
+    this.disabledTank.src = "images/disabledtank.png"; // load all assets now so
+
     this.logo.src = "images/logo.png";
     this.explosionImg.src = "images/explosion.png";
+    this.heart.src = "images/heartSprite.png";
     var t = this;
     this.$canvas.mousemove(function(e){
       //maybe you need mouse?
@@ -146,7 +146,6 @@ Game.prototype.renderLocalPlayer = function(){
    			break;
       case 32:
         this.localPlayer.isFiring = true;
-        this.sounds.shoot.play();
         var angleInRadians = this.localPlayer.rotation * Math.PI / 180;
         this.localPlayer.facingX=Math.cos(angleInRadians);
         this.localPlayer.facingY=Math.sin(angleInRadians);
@@ -159,6 +158,7 @@ Game.prototype.renderLocalPlayer = function(){
     this.getOtherKeyPress = undefined;
   }
   this.localPlayer.sourceX=Math.floor(this.localPlayer.animationFrames[this.localPlayer.frameIndex] % 7) *32;
+
   var angleInRadians = this.localPlayer.rotation * Math.PI / 180;
   //Set the origin to the center of the image
   this.c.save();
@@ -183,6 +183,8 @@ Game.prototype.renderLocalPlayer = function(){
       this.explosion.sourceY += 100;
     } else if (this.explosion.sourceX === 300 && this.explosion.sourceY === 900) {
       this.localPlayer.tanklives = 3;
+      this.explosion.sourceX = 0;
+      this.explosion.sourceY = 0;
       this.appState=STATE_GAMEOVER;
     } else {
       this.explosion.sourceX += 100;
@@ -302,6 +304,7 @@ Game.prototype.gameLoop = function(){
   });
   if (this.firstRun) {
 
+    this.audio.start("loop6");
     this.firstRun = false;
   }
   this.clearCanvasAndDisplayDetails();
@@ -344,18 +347,20 @@ Game.prototype.clearCanvasAndDisplayDetails = function(){
   this.c.fillStyle = "white";
   this.c.fillText ("Health: ", 20, canvas.height - 20);
   for (var i = 0; i < this.localPlayer.tankLives; i++) {
-    this.c.fillStyle = "blue";
-    this.c.beginPath();
-    this.c.arc((i*20)+70,canvas.height-25,this.currentLevel.balls[0].w/2,0,Math.PI*2,true);
-    this.c.closePath();
-    this.c.fill();
+    this.c.drawImage(this.heart, 0,0,64,64,60 + (i * 24),568,20,20);
+
+    // this.c.fillStyle = "blue";
+    // this.c.beginPath();
+    // this.c.arc((i*20)+70,canvas.height-25,this.currentLevel.balls[0].w/2,0,Math.PI*2,true);
+    // this.c.closePath();
+    // this.c.fill();
     // this.c.fillRect((i*20)+60,canvas.height -30,10,10);
   }
 }
 
 Game.prototype.initApp = function(){
   if (this.firstRun) {
-    this.audio.start("loop5");
+    this.audio.start("loop2");
     this.firstRun = false;
   }
 
@@ -540,29 +545,29 @@ Game.prototype.collide = function(){
       var bringIn = 5;
 
       if (
-        ( ((tankX > brickX) && (tankX < ((brickX + brickW)-bringIn))) || ( ((tankX + tankW) > brickX) && ((tankX + tankW) < ((brickX + brickW)-bringIn)) ) )
+        ( ((tankX >= brickX) && (tankX < ((brickX + brickW)-bringIn))) || ( ((tankX + tankW) > brickX) && ((tankX + tankW) < ((brickX + brickW)-bringIn)) ) )
         && ( (tankY < (brickY + brickH)) && (tankY > (brickY + (brickH / 2))) )
         ){
         //top
         this.localPlayer.y = this.localPlayer.y+5;
       }
       else if (
-        ( ((tankX > brickX) && (tankX < ((brickX + brickW)-bringIn))) || ( ((tankX + tankW) > brickX) && ((tankX + tankW) < ((brickX + brickW)-bringIn)) ) )
+        ( ((tankX >= brickX) && (tankX < ((brickX + brickW)-bringIn))) || ( ((tankX + tankW) > brickX) && ((tankX + tankW) < ((brickX + brickW)-bringIn)) ) )
         && ( ((tankY+tankH) > brickY) && ((tankY+tankH) < (brickY + (brickH / 2))) )
       ){
         //bottom
         this.localPlayer.y = this.localPlayer.y-5;
       }
       else if (
-        ( ((tankX > (brickX + (brickW / 2)) ) && (tankX < (brickX + brickW))) )
-        && ( ( (tankY < (brickY + brickH)) && (tankY > (brickY)) ) || ( ((tankY+tankH) < (brickY + brickH)) && ((tankY+tankH) > (brickY)) ) )
+        ( ((tankX >= (brickX + (brickW / 2)) ) && (tankX < (brickX + brickW))) )
+        && ( ( (tankY < (brickY + brickH)) && (tankY >= (brickY)) ) || ( ((tankY+tankH) < (brickY + brickH)) && ((tankY+tankH) > (brickY)) ) )
       ) {
         //right
         this.localPlayer.x = this.localPlayer.x+5;
       }
       else if (
         ( (( (tankX + tankW) > (brickX)) ) && ((tankX + tankW) < (brickX + (brickW/2))) )
-        && ( ( (tankY < (brickY + brickH)) && (tankY > (brickY)) ) || ( ((tankY+tankH) < (brickY + brickH)) && ((tankY+tankH) > (brickY)) ) )
+        && ( ( (tankY < (brickY + brickH)) && (tankY >= (brickY)) ) || ( ((tankY+tankH) < (brickY + brickH)) && ((tankY+tankH) > (brickY)) ) )
       ) {
         //left
         this.localPlayer.x = this.localPlayer.x-5;
