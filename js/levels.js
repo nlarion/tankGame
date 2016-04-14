@@ -35,36 +35,6 @@ Level.prototype.makeBall = function(x,y,rotation){
 	var ballX	= (x +22) + 39*Math.cos(radians);
 	var ballY = (y+17) + 39*Math.sin(radians);
 
-  // if(orientation === 0) {
-  //   console.log("up");
-  //   tempVelx = 0;
-  //   tempVely = -15;
-  //   xOffset = 20;
-  //   yOffset = -1;
-  //
-  // } else if (orientation === 1) {
-  //   console.log("right");
-  //   tempVelx = 15;
-  //   tempVely = 0;
-  //   xOffset = 38;
-  //   yOffset = 20;
-  //
-  // } else if (orientation === 2) {
-  //   console.log("down");
-  //   tempVelx = 0;
-  //   tempVely = 15;
-  //   xOffset = 20;
-  //   yOffset = 38;
-  //
-  // } else if (orientation === 3) {
-  //   console.log("left");
-  //   tempVelx = -15;
-  //   tempVely = 0;
-  //   xOffset = -1;
-  //   yOffset = 20;
-  //
-  // }
-
   var ball = new Ball(ballX,ballY,12,12,ballXvel,ballYvel,"white");
   ball.launched = true;
   this.balls.push(ball);

@@ -19,8 +19,8 @@ var Game = function(){
   this.currentLevel = new Level(1);
   this.localPlayer = new Tank();
   this.explosion = new Explosion();
-  //this.firebase = new Firebase('https://epicodus-tank.firebaseio.com/');
-  this.firebase = new Firebase('https://local-tank.firebaseio.com/');
+  this.firebase = new Firebase('https://epicodus-tank.firebaseio.com/');
+  //this.firebase = new Firebase('https://local-tank.firebaseio.com/');
 }
 
 Game.prototype.gameManager = function(){
@@ -32,11 +32,8 @@ Game.prototype.gameManager = function(){
     this.firebase.set({game: 'Game'});
     //load assets
     this.audio = new SeamlessLoop();
-    this.audio.addUri('sounds/breakoutLoop1.mp3',5350,"loop1");
-    this.audio.addUri('sounds/breakoutLoop2.mp3',18700,"loop2");
-    this.audio.addUri('sounds/breakoutLoop3.mp3',2720,"loop3");
-    this.audio.addUri('sounds/breakoutLoop4.mp3',2700,"loop4");
-    this.audio.addUri('sounds/breakoutLoop5.mp3',7990,"loop5");
+    this.audio.addUri('sounds/tankIntro.mp3',33000,"loop2");
+    this.audio.addUri('sounds/tankLoop.mp3',38000, "loop6");
     this.sounds = {death: new Audio('sounds/deathExplosion.mp3'), death2: new Audio('sounds/howieScream.mp3'), shoot: new Audio('sounds/new-shoot.mp3')};
     // this.audio = new Audio('sounds/breakoutLoop1.mp3');
     //playerOne was here
@@ -45,11 +42,13 @@ Game.prototype.gameManager = function(){
     this.disabledTank = new Image();
     this.explosionImg = new Image();
     this.logo = new Image();
+    this.heart = new Image();
     this.playerOne.src = "images/redtank.png"; // load all assets now so
     this.playerTwo.src = "images/bluetank.png"; // load all assets now so
     this.disabledTank.src = "images/disabledtank.png"; // load all assets now so
     this.logo.src = "images/logo.png";
     this.explosionImg.src = "images/explosion.png";
+    this.heart.src = "images/heartSprite.png";
     var t = this;
     this.$canvas.mousemove(function(e){
       //maybe you need mouse?
@@ -143,7 +142,6 @@ Game.prototype.renderLocalPlayer = function(){
   				}
    			break;
       case 32:
-      this.sounds.shoot.play();
         var angleInRadians = this.localPlayer.rotation * Math.PI / 180;
         this.localPlayer.facingX=Math.cos(angleInRadians);
         this.localPlayer.facingY=Math.sin(angleInRadians);
@@ -158,9 +156,7 @@ Game.prototype.renderLocalPlayer = function(){
   // this.c.fillRect(this.localPlayer.x,this.localPlayer.y,this.localPlayer.w,this.localPlayer.h);
 
   this.localPlayer.sourceX=Math.floor(this.localPlayer.animationFrames[this.localPlayer.frameIndex] % 7) *32;
-  // this.c.drawImage(this.playerOne, this.localPlayer.sourceX,this.localPlayer.sourceY,32,32,this.localPlayer.x,this.localPlayer.y,this.localPlayer.w,this.localPlayer.h);
-  //this.c.fillRect(this.localPlayer.x,this.localPlayer.y,this.localPlayer.w,this.localPlayer.h);
-  //Convert degrees to radian
+
   var angleInRadians = this.localPlayer.rotation * Math.PI / 180;
 
   //Set the origin to the center of the image
@@ -190,15 +186,6 @@ Game.prototype.renderLocalPlayer = function(){
     this.localPlayer.tankLives -= 1;
   }
 
-
-    console.log(this.localPlayer);
-    console.log(this.explosion);
-
-    // if (this.explosion.frameIndex>=this.explosion.animationFrames.length-1){
-    //   } else {
-    //     this.explosion.frameIndex++;
-    //   }
-
     this.c.drawImage(this.explosionImg, this.explosion.sourceX,this.explosion.sourceY,100,100,-25,-25,this.explosion.w,this.explosion.h);
 
     if(this.explosion.sourceX === 800) {
@@ -206,6 +193,8 @@ Game.prototype.renderLocalPlayer = function(){
       this.explosion.sourceY += 100;
     } else if (this.explosion.sourceX === 300 && this.explosion.sourceY === 900) {
       this.localPlayer.tanklives = 3;
+      this.explosion.sourceX = 0;
+      this.explosion.sourceY = 0;
       this.appState=STATE_GAMEOVER;
     } else {
       this.explosion.sourceX += 100;
@@ -266,6 +255,7 @@ Game.prototype.gameLoop = function(){
     var data = snapshot.val();
   });
   if (this.firstRun) {
+    this.audio.start("loop6");
     this.firstRun = false;
   }
   this.clearCanvasAndDisplayDetails();
@@ -294,18 +284,20 @@ Game.prototype.clearCanvasAndDisplayDetails = function(){
   this.c.fillStyle = "white";
   this.c.fillText ("Health: ", 20, canvas.height - 20);
   for (var i = 0; i < this.localPlayer.tankLives; i++) {
-    this.c.fillStyle = "blue";
-    this.c.beginPath();
-    this.c.arc((i*20)+70,canvas.height-25,this.currentLevel.balls[0].w/2,0,Math.PI*2,true);
-    this.c.closePath();
-    this.c.fill();
+    this.c.drawImage(this.heart, 0,0,64,64,60 + (i * 24),568,20,20);
+
+    // this.c.fillStyle = "blue";
+    // this.c.beginPath();
+    // this.c.arc((i*20)+70,canvas.height-25,this.currentLevel.balls[0].w/2,0,Math.PI*2,true);
+    // this.c.closePath();
+    // this.c.fill();
     // this.c.fillRect((i*20)+60,canvas.height -30,10,10);
   }
 }
 
 Game.prototype.initApp = function(){
   if (this.firstRun) {
-    this.audio.start("loop5");
+    this.audio.start("loop2");
     this.firstRun = false;
   }
 

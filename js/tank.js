@@ -15,7 +15,6 @@ var Tank = function () {
   this.velx = 0;
   this.vely = 0;
   this.radius = 30;
-  this.tankLives = 3;
   this.rotation = 0;
   this.rotationVel = 10;
   this.facingX = 0;
