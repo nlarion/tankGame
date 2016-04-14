@@ -20,8 +20,8 @@ var Game = function(){
   this.localPlayer;
   this.remotePlayer;
   this.explosion = new Explosion();
-  this.firebase = new Firebase('https://epicodus-tank.firebaseio.com/');
-  //this.firebase = new Firebase('https://local-tank.firebaseio.com/');
+  // this.firebase = new Firebase('https://epicodus-tank.firebaseio.com/');
+  this.firebase = new Firebase('https://local-tank.firebaseio.com/');
 }
 
 Game.prototype.gameManager = function(){
@@ -707,10 +707,22 @@ Game.prototype.gameOverScreen = function(){
   this.c.font = " "+ canvas.width / 10 + "px serif";
   this.c.fillStyle = "#fff";
 
-  if(this.localPlayer.tankLives <= 0) {
-    this.c.fillText ("Blue won!",canvas.width / 4, canvas.height / 2);
+  var localColor = null;
+  var enemyColor = null;
+
+  if(this.localPlayer.player === 1) {
+    localColor = "Red";
+    enemyColor = "Blue";
   } else {
-    this.c.fillText ("Red won!",canvas.width / 4, canvas.height / 2);
+    localColor = "Blue";
+    enemyColor = "Red";
+  }
+
+  if(this.localPlayer.tankLives <= 0) {
+
+    this.c.fillText (enemyColor + " won!",canvas.width / 4, canvas.height / 2);
+  } else {
+    this.c.fillText (localColor + " won!",canvas.width / 4, canvas.height / 2);
   }
 
   this.c.font = " "+ canvas.width / 30 + "px serif";
