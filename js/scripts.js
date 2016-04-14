@@ -41,8 +41,10 @@ Game.prototype.gameManager = function(){
     //playerOne was here
     this.playerOne = new Image();
     this.playerTwo = new Image();
+    this.logo = new Image();
     this.playerOne.src = "images/redtank.png"; // load all assets now so
     this.playerTwo.src = "images/bluetank.png"; // load all assets now so
+    this.logo.src = "images/logo.png";
     var t = this;
     this.$canvas.mousemove(function(e){
       t.currentPlayer.x = e.offsetX-((t.currentLevel.bricks[0].w)/2);
@@ -288,9 +290,12 @@ Game.prototype.initApp = function(){
     this.introMenu.textFade = fadeCount.toFixed(2);
     }
 
-    this.c.fillStyle = "rgba(255, 255, 255, " + this.introMenu.textFade + ")";
-    this.c.fillText("Player 1",this.introMenu.startX, 365);
-    this.c.fillText("Player 2",this.introMenu.startX, 435);
+    this.c.fillStyle = "rgba(255, 255, 255, " + this.introCount.textFade + ")";
+    this.c.drawImage(this.logo, 260, 70, 530, 190);
+    this.c.fillText("Select a tank", 376, 310);
+    this.c.fillText("Player 1",this.introCount.startX, 365);
+    this.c.fillText("Player 2",this.introCount.startX, 435);
+    this.c.fillText("\xA9 2016",430, 525);
 
     this.c.beginPath();
     this.c.moveTo(70+this.introMenu.xMod,60+this.introMenu.yMod);
