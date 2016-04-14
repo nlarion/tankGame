@@ -19,6 +19,7 @@ var Game = function(){
   this.currentLevel = new Level(1);
   this.currentPlayer = new Player();
   this.localPlayer = new Tank();
+  this.explosion = new Explosion();
   this.firebase = new Firebase('https://epicodus-tank.firebaseio.com/');
 }
 
@@ -36,13 +37,15 @@ Game.prototype.gameManager = function(){
     this.audio.addUri('sounds/breakoutLoop3.mp3',2720,"loop3");
     this.audio.addUri('sounds/breakoutLoop4.mp3',2700,"loop4");
     this.audio.addUri('sounds/breakoutLoop5.mp3',7990,"loop5");
-    this.sounds = {gameOver: new Audio('sounds/breakoutGameOver.mp3'), normalHit: new Audio('sounds/SG280_BD_11.mp3'), lightHit: new Audio('sounds/SG280_Bongo_08.mp3'), powerUp: new Audio('sounds/SG280_Cym_01.mp3'), steady: new Audio('sounds/SG280_Tom_02.mp3'), mediumHit: new Audio('sounds/SG280_SD_02.mp3')};
+    this.sounds = {death: new Audio('sounds/deathExplosion.mp3'), death2: new Audio('sounds/howieScream.mp3')};
     // this.audio = new Audio('sounds/breakoutLoop1.mp3');
     //playerOne was here
     this.playerOne = new Image();
     this.playerTwo = new Image();
+    this.explosionImg = new Image();
     this.playerOne.src = "images/redtank.png"; // load all assets now so
     this.playerTwo.src = "images/bluetank.png"; // load all assets now so
+    this.explosionImg.src = "images/explosion.png";
     var t = this;
     this.$canvas.mousemove(function(e){
       t.currentPlayer.x = e.offsetX-((t.currentLevel.bricks[0].w)/2);
@@ -81,10 +84,11 @@ Game.prototype.gameManager = function(){
 };
 
 Game.prototype.renderLocalPlayer = function(){
-  if(this.getOtherKeyPress){
+  if(this.getOtherKeyPress && this.localPlayer.tankLives > 0){
     switch (this.getOtherKeyPress.keyCode) {
 			case undefined:
  				 this.localPlayer.frameIndex=0;
+         this.explosion.frameIndex=0;
 				 break;
 			case 100:
   			this.localPlayer.sourceX=0;
@@ -164,7 +168,47 @@ Game.prototype.renderLocalPlayer = function(){
 
   //draw the image
 
-  this.c.drawImage(this.playerOne, this.localPlayer.sourceX,this.localPlayer.sourceY,32,32,-25,-25,this.localPlayer.w,this.localPlayer.h);
+
+  if (this.localPlayer.tankLives <= 0) {
+
+    if(this.localPlayer.tankLives === 0) {
+    var deathSound = Math.floor(Math.random() * (10 - 1)) + 1;
+    console.log(deathSound);
+    if(deathSound >= 8){
+      this.sounds.death2.play()
+
+    }
+    if (deathSound <=7) {
+      this.sounds.death.play();
+
+    }
+    this.localPlayer.tankLives -= 1;
+  }
+
+
+    console.log(this.localPlayer);
+    console.log(this.explosion);
+
+    // if (this.explosion.frameIndex>=this.explosion.animationFrames.length-1){
+    //   } else {
+    //     this.explosion.frameIndex++;
+    //   }
+
+    this.c.drawImage(this.explosionImg, this.explosion.sourceX,this.explosion.sourceY,100,100,-25,-25,this.explosion.w,this.explosion.h);
+
+    if(this.explosion.sourceX === 800) {
+      this.explosion.sourceX = 0;
+      this.explosion.sourceY += 100;
+    } else if (this.explosion.sourceX === 300 && this.explosion.sourceY === 900) {
+      this.localPlayer.tanklives = 3;
+      this.appState=STATE_GAMEOVER;
+    } else {
+      this.explosion.sourceX += 100;
+    }
+
+  } else {
+    this.c.drawImage(this.playerOne, this.localPlayer.sourceX,this.localPlayer.sourceY,32,32,-25,-25,this.localPlayer.w,this.localPlayer.h);
+  }
 
   //reset the canvas
   this.c.restore();
@@ -176,7 +220,6 @@ Game.prototype.renderRemotePlayer = function(){
 
 Game.prototype.loadingLevelScreen = function(){
   if (this.firstRun) {
-    this.audio.start("loop2");
     this.firstRun = false;
   }
   this.c.fillStyle = '#000111';
@@ -432,7 +475,6 @@ Game.prototype.collide = function(){
 
 Game.prototype.checkCollision = function(thing1,thing2) {
   if((((thing1.y+thing1.vely) + thing1.h) > (thing2.y)) && ((thing1.y+thing1.vely) < (thing2.y + thing2.h)) && (((thing1.x+thing1.velx) + thing1.w) > thing2.x) && ((thing1.x+thing1.velx) < (thing2.x + thing2.w))){
-    console.log("test");
     return true;
   } else {
     return false;
@@ -551,6 +593,24 @@ Game.prototype.updatePosition = function(){
     this.drawProjectiles();
   }
 };
+Game.prototype.gameOverScreen = function(){
+  if (this.firstRun) {
+    this.sounds.gameOver.play();
+    this.firstRun = false;
+  }
+  this.c.fillStyle = '#000111';
+  this.c.fillRect(0, 0, canvas.width, canvas.height);
+  //Box
+  this.c.strokeStyle = '#000000';
+  this.c.font = " "+ canvas.width / 10 + "px serif";
+  this.c.fillStyle = "#fff";
+  this.c.fillText ("GameOver :(",canvas.width / 4, canvas.height / 2);
+  this.c.font = " "+ canvas.width / 30 + "px serif";
+  this.c.fillText("Click to Try Again...",canvas.width / 2.8, canvas.height / 1.5);
+  if (this.isTheMouseBeingPressed == true) {
+    this.changeStateAndRestartGame();
+  }
+}
 
 Game.prototype.runTheGame = function(){
   var t = this;
