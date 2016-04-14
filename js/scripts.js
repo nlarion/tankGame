@@ -195,7 +195,6 @@ Game.prototype.renderLocalPlayer = function(){
 }
 
 Game.prototype.renderRemotePlayer = function(){
-
   if (this.localPlayer.player === "p1"){
     var t = this;
     this.firebase.on("child_added", function(snapshot){
@@ -311,7 +310,7 @@ Game.prototype.gameLoop = function(){
     this.updatePosition();
     this.testWalls();
   }
-    this.updateFirebase();
+  this.updateFirebase();
   this.ballCollide();
   this.drawBricks();
   this.drawRenderBalls();
@@ -629,7 +628,6 @@ Game.prototype.drawRenderBalls = function(){
         this.c.arc(this.currentLevel.balls[i].x+(this.currentLevel.balls[i].w/2),this.currentLevel.balls[i].y+(this.currentLevel.balls[i].w/2),this.currentLevel.balls[i].w/2,0,Math.PI*2,true);
         this.c.closePath();
         this.c.fill();
-        //console.log(this.currentLevel.balls[i].flashTimer);
         if(this.currentLevel.balls[i].flashTimer > 0){
           this.ballFlash(i);
         }
@@ -640,23 +638,27 @@ Game.prototype.drawRenderBalls = function(){
 
 Game.prototype.ballCollide = function(){
   for (var i = 0; i < this.currentLevel.balls.length; i++) {
-    if ( this.checkCollision(this.currentLevel.balls[i],this.localPlayer) ) { //left and right of ball
+    if ( this.checkCollision(this.currentLevel.balls[i],this.localPlayer) ) {
+      //TODO:probably dont need this if || the one below. TODO: Deal with undefined balls
+
       if ( (this.currentLevel.balls[i].y + this.currentLevel.balls[i].h > this.localPlayer.y) &&
         (this.currentLevel.balls[i].y < this.localPlayer.y + this.localPlayer.h) &&
         ((this.currentLevel.balls[i].x + this.currentLevel.balls[i].w > this.localPlayer.x) &&
         (this.currentLevel.balls[i].x > this.localPlayer.x ) || (this.currentLevel.balls[i].x + this.currentLevel.balls[i].w < this.localPlayer.x) &&
         (this.currentLevel.balls[i].x < this.localPlayer.x)) ) {
         this.currentLevel.balls.splice(i, 1);
-        console.log(this.localPlayer.tankLives);
         this.localPlayer.tankLives -= 1;
-
-        //+0.5 increases the ball speed every time it hits something.
-        //try and make the ball do something here.
-      } else {
-        console.log("super test");
-
       }
-      //this.doCollide(i,j);
+    }
+    if ( this.checkCollision(this.currentLevel.balls[i],this.remotePlayer) ) {
+      if ( (this.currentLevel.balls[i].y + this.currentLevel.balls[i].h > this.remotePlayer.y) &&
+        (this.currentLevel.balls[i].y < this.remotePlayer.y + this.remotePlayer.h) &&
+        ((this.currentLevel.balls[i].x + this.currentLevel.balls[i].w > this.remotePlayer.x) &&
+        (this.currentLevel.balls[i].x > this.remotePlayer.x ) || (this.currentLevel.balls[i].x + this.currentLevel.balls[i].w < this.remotePlayer.x) &&
+        (this.currentLevel.balls[i].x < this.remotePlayer.x)) ) {
+        this.currentLevel.balls.splice(i, 1);
+        this.remotePlayer.tankLives -= 1;
+      }
     }
   }
 };
