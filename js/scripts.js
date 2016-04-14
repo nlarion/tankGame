@@ -17,7 +17,8 @@ var Game = function(){
   this.c = this.$canvas[0].getContext('2d');
   this.level = 1;
   this.currentLevel = new Level(1);
-  this.localPlayer = new Tank();
+  this.localPlayer;
+  this.remotePlayer;
   this.explosion = new Explosion();
   //this.firebase = new Firebase('https://epicodus-tank.firebaseio.com/');
   this.firebase = new Firebase('https://local-tank.firebaseio.com/');
@@ -45,9 +46,9 @@ Game.prototype.gameManager = function(){
     this.disabledTank = new Image();
     this.explosionImg = new Image();
     this.logo = new Image();
-    this.playerOne.src = "images/redtank.png"; // load all assets now so
-    this.playerTwo.src = "images/bluetank.png"; // load all assets now so
-    this.disabledTank.src = "images/disabledtank.png"; // load all assets now so
+    this.playerOne.src = "images/redtank.png";
+    this.playerTwo.src = "images/bluetank.png";
+    this.disabledTank.src = "images/disabledtank.png";
     this.logo.src = "images/logo.png";
     this.explosionImg.src = "images/explosion.png";
     var t = this;
@@ -155,52 +156,26 @@ Game.prototype.renderLocalPlayer = function(){
 		}
     this.getOtherKeyPress = undefined;
   }
-  // this.c.fillRect(this.localPlayer.x,this.localPlayer.y,this.localPlayer.w,this.localPlayer.h);
-
   this.localPlayer.sourceX=Math.floor(this.localPlayer.animationFrames[this.localPlayer.frameIndex] % 7) *32;
-  // this.c.drawImage(this.playerOne, this.localPlayer.sourceX,this.localPlayer.sourceY,32,32,this.localPlayer.x,this.localPlayer.y,this.localPlayer.w,this.localPlayer.h);
-  //this.c.fillRect(this.localPlayer.x,this.localPlayer.y,this.localPlayer.w,this.localPlayer.h);
-  //Convert degrees to radian
   var angleInRadians = this.localPlayer.rotation * Math.PI / 180;
-
   //Set the origin to the center of the image
   this.c.save();
   this.c.translate(this.localPlayer.x+25, this.localPlayer.y+25);
-
   //Rotate the canvas around the origin
-
   this.c.rotate(angleInRadians);
-
   //draw the image
-
-
   if (this.localPlayer.tankLives <= 0) {
-
     if(this.localPlayer.tankLives === 0) {
-    var deathSound = Math.floor(Math.random() * (10 - 1)) + 1;
-    console.log(deathSound);
-    if(deathSound >= 8){
-      this.sounds.death2.play()
-
+      var deathSound = Math.floor(Math.random() * (10 - 1)) + 1;
+      if(deathSound >= 8){
+        this.sounds.death2.play()
+      }
+      if (deathSound <=7) {
+        this.sounds.death.play();
+      }
+      this.localPlayer.tankLives -= 1;
     }
-    if (deathSound <=7) {
-      this.sounds.death.play();
-
-    }
-    this.localPlayer.tankLives -= 1;
-  }
-
-
-    console.log(this.localPlayer);
-    console.log(this.explosion);
-
-    // if (this.explosion.frameIndex>=this.explosion.animationFrames.length-1){
-    //   } else {
-    //     this.explosion.frameIndex++;
-    //   }
-
     this.c.drawImage(this.explosionImg, this.explosion.sourceX,this.explosion.sourceY,100,100,-25,-25,this.explosion.w,this.explosion.h);
-
     if(this.explosion.sourceX === 800) {
       this.explosion.sourceX = 0;
       this.explosion.sourceY += 100;
@@ -210,17 +185,17 @@ Game.prototype.renderLocalPlayer = function(){
     } else {
       this.explosion.sourceX += 100;
     }
-
   } else {
-    this.c.drawImage(this.playerOne, this.localPlayer.sourceX,this.localPlayer.sourceY,32,32,-25,-25,this.localPlayer.w,this.localPlayer.h);
+    this.c.drawImage(this.localPlayer.image, this.localPlayer.sourceX,this.localPlayer.sourceY,32,32,-25,-25,this.localPlayer.w,this.localPlayer.h);
   }
-
   //reset the canvas
   this.c.restore();
 }
 
 Game.prototype.renderRemotePlayer = function(){
-
+  console.log(this.remotePlayer.sourceX);
+  console.log(this.remotePlayer.sourceY);
+  this.c.drawImage(this.remotePlayer.image, this.remotePlayer.sourceX,this.remotePlayer.sourceY,32,32,-25,-25,this.remotePlayer.w,this.remotePlayer.h);
 }
 
 Game.prototype.loadingLevelScreen = function(){
@@ -266,6 +241,7 @@ Game.prototype.gameLoop = function(){
     var data = snapshot.val();
   });
   if (this.firstRun) {
+
     this.firstRun = false;
   }
   this.clearCanvasAndDisplayDetails();
@@ -277,14 +253,15 @@ Game.prototype.gameLoop = function(){
   this.ballCollide();
   this.drawBricks();
   this.drawRenderBalls();
+  this.renderRemotePlayer();
   this.renderLocalPlayer();
   this.updateFirebase();
-
 };
 
 
 Game.prototype.updateFirebase = function(){
-  this.firebase.child('game').update({x: this.localPlayer.x, y: this.localPlayer.y});
+  this.firebase.child('game').child(this.localPlayer.player
+  ).update({x: this.localPlayer.x, y: this.localPlayer.y});
 }
 
 Game.prototype.clearCanvasAndDisplayDetails = function(){
@@ -317,15 +294,15 @@ Game.prototype.initApp = function(){
 
 //Draws tank image depending on player select
   if(this.introMenu.playerOneSelect){
-    this.c.drawImage(this.disabledTank, this.localPlayer.sourceX,this.localPlayer.sourceY,32,32,this.introMenu.startX-75,330,this.localPlayer.w,this.localPlayer.h);
+    this.c.drawImage(this.disabledTank, 0,96,32,32,this.introMenu.startX-75,330,50,50);
   } else {
-    this.c.drawImage(this.playerOne, this.localPlayer.sourceX,this.localPlayer.sourceY,32,32,this.introMenu.startX-75,330,this.localPlayer.w,this.localPlayer.h);
+    this.c.drawImage(this.playerOne, 0,96,32,32,this.introMenu.startX-75,330,50,50);
   }
 
   if(this.introMenu.playerTwoSelect){
-    this.c.drawImage(this.disabledTank, this.localPlayer.sourceX,this.localPlayer.sourceY,32,32,this.introMenu.startX-75,400,this.localPlayer.w,this.localPlayer.h);
+    this.c.drawImage(this.disabledTank, 0,96,32,32,this.introMenu.startX-75,400,50,50);
   } else {
-    this.c.drawImage(this.playerTwo, this.localPlayer.sourceX,this.localPlayer.sourceY,32,32,this.introMenu.startX-75,400,this.localPlayer.w,this.localPlayer.h);
+    this.c.drawImage(this.playerTwo, 0,96,32,32,this.introMenu.startX-75,400,50,50);
   }
 
 //Loads intro menu
@@ -377,10 +354,14 @@ Game.prototype.initApp = function(){
         if(this.getOtherKeyPress.keyCode === 13 && this.introMenu.yMod === 355){
           this.firebase.child('game').update({playerTwo: true});
           this.introMenu.localPlayerSelect = true;
+          this.localPlayer = new Tank(2, 850, 500, this.playerTwo);
+          this.remotePlayer = new Tank(1, 50, 50, this.playerOne);
           //Listens for P1 select
         } else if (this.getOtherKeyPress.keyCode === 13 && this.introMenu.yMod === 285){
           this.firebase.child('game').update({playerOne: true});
           this.introMenu.localPlayerSelect = true;
+          this.localPlayer = new Tank(1, 50, 50, this.playerOne);
+          this.remotePlayer = new Tank(2, 850, 500, this.playerTwo);
         }
         this.getOtherKeyPress = undefined;
       }
@@ -406,8 +387,7 @@ Game.prototype.initApp = function(){
     }
   });
 
-  if (this.isTheMouseBeingPressed == true) {
-    this.isTheMouseBeingPressed = false;
+  if (this.introMenu.playerOneSelect === true && this.introMenu.playerTwoSelect === true ) {
     this.firstRun = true;
     this.audio.stop();
     this.appState = STATE_PLAYING;
