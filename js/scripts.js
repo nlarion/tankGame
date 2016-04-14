@@ -12,7 +12,7 @@ var Game = function(){
   this.pointImage = new Image();
   this.appState = STATE_LOADING;
   this.isTheMouseBeingPressed = false;
-  this.introCount = {finalX: 475, startX: 1100, textFade: 0, xMod: 270, yMod: 285};
+  this.introMenu = {finalX: 475, startX: 1100, textFade: 0, xMod: 270, yMod: 285};
   this.$canvas = $('canvas');
   this.c = this.$canvas[0].getContext('2d');
   this.level = 1;
@@ -82,6 +82,7 @@ Game.prototype.gameManager = function(){
 
 Game.prototype.renderLocalPlayer = function(){
   if(this.getOtherKeyPress){
+    console.log(this.getOtherKeyPress);
     switch (this.getOtherKeyPress.keyCode) {
 			case undefined:
  				 this.localPlayer.frameIndex=0;
@@ -274,28 +275,40 @@ Game.prototype.initApp = function(){
   this.c.font = "30px monospace";
   this.c.strokeRect(1, 1, canvas.width - 2, canvas.height - 2);
 
-  this.c.drawImage(this.playerOne, this.localPlayer.sourceX,this.localPlayer.sourceY,32,32,this.introCount.startX-75,330,this.localPlayer.w,this.localPlayer.h);
-  this.c.drawImage(this.playerTwo, this.localPlayer.sourceX,this.localPlayer.sourceY,32,32,this.introCount.startX-75,400,this.localPlayer.w,this.localPlayer.h);
+  this.c.drawImage(this.playerOne, this.localPlayer.sourceX,this.localPlayer.sourceY,32,32,this.introMenu.startX-75,330,this.localPlayer.w,this.localPlayer.h);
+  this.c.drawImage(this.playerTwo, this.localPlayer.sourceX,this.localPlayer.sourceY,32,32,this.introMenu.startX-75,400,this.localPlayer.w,this.localPlayer.h);
 
-  if(this.introCount.finalX<this.introCount.startX){
-    this.introCount.startX-=40;
+  if(this.introMenu.finalX<this.introMenu.startX){
+    this.introMenu.startX-=40;
   }
-  if(this.introCount.startX <= this.introCount.finalX){
-    if(this.introCount.textFade <= 1){
-      var fadeCount = parseFloat(this.introCount.textFade);
+  if(this.introMenu.startX <= this.introMenu.finalX){
+    if(this.introMenu.textFade <= 1){
+      var fadeCount = parseFloat(this.introMenu.textFade);
       fadeCount += .03;
-    this.introCount.textFade = fadeCount.toFixed(2);
+    this.introMenu.textFade = fadeCount.toFixed(2);
     }
 
-    this.c.fillStyle = "rgba(255, 255, 255, " + this.introCount.textFade + ")";
-    this.c.fillText("Player 1",this.introCount.startX, 365);
-    this.c.fillText("Player 2",this.introCount.startX, 435);
+    this.c.fillStyle = "rgba(255, 255, 255, " + this.introMenu.textFade + ")";
+    this.c.fillText("Player 1",this.introMenu.startX, 365);
+    this.c.fillText("Player 2",this.introMenu.startX, 435);
 
     this.c.beginPath();
-    this.c.moveTo(70+this.introCount.xMod,60+this.introCount.yMod);
-    this.c.lineTo(80+this.introCount.xMod, 70+this.introCount.yMod);
-    this.c.lineTo(70+this.introCount.xMod, 80+this.introCount.yMod);
+    this.c.moveTo(70+this.introMenu.xMod,60+this.introMenu.yMod);
+    this.c.lineTo(80+this.introMenu.xMod, 70+this.introMenu.yMod);
+    this.c.lineTo(70+this.introMenu.xMod, 80+this.introMenu.yMod);
     this.c.fill();
+  }
+
+  if(this.getOtherKeyPress){
+    if(this.getOtherKeyPress.keyCode === 115){
+      this.introMenu.yMod = 355;
+    }
+    if(this.getOtherKeyPress.keyCode === 119){
+      this.introMenu.yMod = 285;
+    }
+    if(this.getOtherKeyPress.keyCode === 13 && this.introMenu.xMod === 285){
+        this.localPlayer = this.playerOne; //TODO: Player select
+    }
   }
 
   if (this.isTheMouseBeingPressed == true) {
