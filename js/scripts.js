@@ -12,7 +12,7 @@ var Game = function(){
   this.pointImage = new Image();
   this.appState = STATE_LOADING;
   this.isTheMouseBeingPressed = false;
-  this.introMenu = {finalX: 475, startX: 1100, textFade: 0, xMod: 270, yMod: 285, playerOneSelect: false, playerTwoSelect: false};
+  this.introMenu = {finalX: 475, startX: 1100, textFade: 0, xMod: 270, yMod: 285, playerOneSelect: false, playerTwoSelect: false, localPlayerSelect: false};
   this.$canvas = $('canvas');
   this.c = this.$canvas[0].getContext('2d');
   this.level = 1;
@@ -272,14 +272,26 @@ Game.prototype.initApp = function(){
     this.firstRun = false;
   }
 
+  //Draws canvas
   this.c.fillStyle = '#000';
   this.c.fillRect(0, 0, canvas.width, canvas.height);
   this.c.fillStyle = "#fff";
   this.c.strokeRect(1, 1, canvas.width - 2, canvas.height - 2);
 
-  this.c.drawImage(this.playerOne, this.localPlayer.sourceX,this.localPlayer.sourceY,32,32,this.introMenu.startX-75,330,this.localPlayer.w,this.localPlayer.h);
-  this.c.drawImage(this.playerTwo, this.localPlayer.sourceX,this.localPlayer.sourceY,32,32,this.introMenu.startX-75,400,this.localPlayer.w,this.localPlayer.h);
+//Draws tank image depending on player select
+  if(this.introMenu.playerOneSelect){
+    this.c.drawImage(this.disabledTank, this.localPlayer.sourceX,this.localPlayer.sourceY,32,32,this.introMenu.startX-75,330,this.localPlayer.w,this.localPlayer.h);
+  } else {
+    this.c.drawImage(this.playerOne, this.localPlayer.sourceX,this.localPlayer.sourceY,32,32,this.introMenu.startX-75,330,this.localPlayer.w,this.localPlayer.h);
+  }
 
+  if(this.introMenu.playerTwoSelect){
+    this.c.drawImage(this.disabledTank, this.localPlayer.sourceX,this.localPlayer.sourceY,32,32,this.introMenu.startX-75,400,this.localPlayer.w,this.localPlayer.h);
+  } else {
+    this.c.drawImage(this.playerTwo, this.localPlayer.sourceX,this.localPlayer.sourceY,32,32,this.introMenu.startX-75,400,this.localPlayer.w,this.localPlayer.h);
+  }
+
+//Loads intro menu
   if(this.introMenu.finalX<this.introMenu.startX){
     this.introMenu.startX-=40;
   }
@@ -290,107 +302,69 @@ Game.prototype.initApp = function(){
     this.introMenu.textFade = fadeCount.toFixed(2);
     }
 
-    this.c.font = "25px monospace";
-    this.c.fillStyle = "rgba(255, 255, 255, " + this.introMenu.textFade + ")";
-
-    //retrieves P1/P2 selected status and displays waiting message
-
-    if(this.introMenu.playerOneSelect == true || this.introMenu.playerTwoSelect == true){
-      this.c.fillText("Waiting for other player", 319, 310);
-    } else {
-      this.c.fillText("Select a tank", 386, 310);
-
-    }
-
-    // this.c.font = "20px monospace";
-    // this.c.fillText("\xA9 2016",430, 525);
-
-
     this.c.font = "30px monospace";
     this.c.fillStyle = "rgba(255, 255, 255, " + this.introMenu.textFade + ")";
     this.c.drawImage(this.logo, 290, 70, 430, 180);
     this.c.fillText("Player 1",this.introMenu.startX, 365);
     this.c.fillText("Player 2",this.introMenu.startX, 435);
 
-    this.c.beginPath();
-    this.c.moveTo(70+this.introMenu.xMod,60+this.introMenu.yMod);
-    this.c.lineTo(80+this.introMenu.xMod, 70+this.introMenu.yMod);
-    this.c.lineTo(70+this.introMenu.xMod, 80+this.introMenu.yMod);
-    this.c.fill();
-  }
+    this.c.font = "25px monospace";
+    this.c.fillStyle = "rgba(255, 255, 255, " + this.introMenu.textFade + ")";
+    if(this.introMenu.localPlayerSelect){
+      this.c.fillText("Waiting for other player", 319, 310);
+    } else {
+      this.c.fillText("Select a tank", 386, 310);
+    //Draws select triangle
+      this.c.beginPath();
+      this.c.moveTo(70+this.introMenu.xMod,60+this.introMenu.yMod);
+      this.c.lineTo(80+this.introMenu.xMod, 70+this.introMenu.yMod);
+      this.c.lineTo(70+this.introMenu.xMod, 80+this.introMenu.yMod);
+      this.c.fill();
 
-
-
-
-
-
-
-
-
-
-
-
-  if(this.getOtherKeyPress){
-    if(this.getOtherKeyPress.keyCode === 115){
-      this.introMenu.yMod = 355;
-    } else if (this.getOtherKeyPress.keyCode === 119){
-      this.introMenu.yMod = 285;
+    //Listens for player select
+      if(this.getOtherKeyPress){
+      //Moves select triangle
+        if(this.getOtherKeyPress.keyCode === 115){
+          this.introMenu.yMod = 355;
+        } else if (this.getOtherKeyPress.keyCode === 119){
+          this.introMenu.yMod = 285;
+        }
+        if(this.getOtherKeyPress.keyCode === 13 && this.introMenu.yMod === 355){
+          //Listens for P2 select
+          this.firebase.child('game').update({playerTwo: true});
+          this.introMenu.localPlayerSelect = true;
+        } else if (this.getOtherKeyPress.keyCode === 13 && this.introMenu.yMod === 285){
+          //Listens for P1 select
+          this.firebase.child('game').update({playerOne: true});
+          this.introMenu.localPlayerSelect = true;
+        }
+        this.getOtherKeyPress = undefined;
+      }
     }
   }
 
-
-
-
-
-  if(this.getOtherKeyPress){
-
-      if(this.getOtherKeyPress.keyCode === 13 && this.introMenu.yMod === 355){
-        //P2 select
-        this.c.drawImage(this.disabledTank, this.localPlayer.sourceX,this.localPlayer.sourceY,32,32,this.introMenu.startX-75,400,this.localPlayer.w,this.localPlayer.h);
-
-        this.firebase.child('game').update({playerTwo: true});
-
-        // window.addEventListener(115,e,false);
-
-      } else if (this.getOtherKeyPress.keyCode === 13 && this.introMenu.yMod === 285){
-
-        //P1 select
-        this.c.drawImage(this.disabledTank, this.localPlayer.sourceX,this.localPlayer.sourceY,32,32,this.introMenu.startX-75,330,this.localPlayer.w,this.localPlayer.h);
-
-        //Updates database for P1 as selected
-        this.firebase.child('game').update({playerOne: true});
-
-      }
-      this.getOtherKeyPress = undefined;
+  //Updates local model based on firebase
+  var t = this;
+  this.firebase.on("child_added", function(snapshot){
+    var data = snapshot.val();
+    if(data.playerOne){
+      t.introMenu.playerOneSelect = true;
+    } else {
+      t.introMenu.playerOneSelect = false;
     }
+    if (data.playerTwo){
+      t.introMenu.playerTwoSelect = true;
+    } else {
+      t.introMenu.playerTwoSelect = false;
+    }
+  });
 
-    var t = this;
-    this.firebase.on("child_added", function(snapshot){
-      var data = snapshot.val();
-      if(data.playerOne){
-        t.introMenu.playerOneSelect = true;
-      } else {
-        t.introMenu.playerOneSelect = false;
-      }
-      if (data.playerTwo){
-        t.introMenu.playerTwoSelect = true;
-      } else {
-        t.introMenu.playerTwoSelect = false;
-      }
-    });
-  console.log(this.introMenu.playerOneSelect);
-  console.log(this.introMenu.playerTwoSelect);
-
-
-
-
-
-  if (this.isTheMouseBeingPressed == true) {
-    this.isTheMouseBeingPressed = false;
-    this.firstRun = true;
-    this.audio.stop();
-    this.appState = STATE_PLAYING;
-  }
+  // if (this.isTheMouseBeingPressed == true) {
+  //   this.isTheMouseBeingPressed = false;
+  //   this.firstRun = true;
+  //   this.audio.stop();
+  //   this.appState = STATE_PLAYING;
+  // }
 }
 
 Game.prototype.drawBricks = function(){
