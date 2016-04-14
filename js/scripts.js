@@ -12,14 +12,14 @@ var Game = function(){
   this.pointImage = new Image();
   this.appState = STATE_LOADING;
   this.isTheMouseBeingPressed = false;
-  this.introMenu = {finalX: 475, startX: 1100, textFade: 0, xMod: 270, yMod: 285};
+  this.introMenu = {finalX: 475, startX: 1100, textFade: 0, xMod: 270, yMod: 285, playerOneSelect: false, playerTwoSelect: false};
   this.$canvas = $('canvas');
   this.c = this.$canvas[0].getContext('2d');
   this.level = 1;
   this.currentLevel = new Level(1);
   this.currentPlayer = new Player();
   this.localPlayer = new Tank();
-  this.firebase = new Firebase('https://epicodus-tank.firebaseio.com/');
+  this.firebase = new Firebase('https://local-tank.firebaseio.com/');
 }
 
 Game.prototype.gameManager = function(){
@@ -215,7 +215,7 @@ Game.prototype.changeStateAndRestartGame = function(){
 }
 
 Game.prototype.gameLoop = function(){
-  this.firebase.on("value", function(snapshot){
+  this.firebase.on("child_added", function(snapshot){
     var data = snapshot.val();
   });
   if (this.firstRun) {
@@ -245,10 +245,9 @@ Game.prototype.gameLoop = function(){
 
 
 Game.prototype.updateFirebase = function(){
-  this.firebase.child('game').set({x: this.localPlayer.x, y: this.localPlayer.y});
+  this.firebase.child('game').update({x: this.localPlayer.x, y: this.localPlayer.y});
 }
 
-// this.localPlayer.sourceX=Math.floor(this.localPlayer.animationFrames[this.localPlayer.frameIndex] % 12) *50;
 Game.prototype.clearCanvasAndDisplayDetails = function(){
   this.c.fillStyle = "#54717A";
   this.c.fillRect(0,0,canvas.width,canvas.height);
@@ -295,15 +294,8 @@ Game.prototype.initApp = function(){
     this.c.fillStyle = "rgba(255, 255, 255, " + this.introMenu.textFade + ")";
 
     //retrieves P1/P2 selected status and displays waiting message
-    var playerOneSelect;
-    var playerTwoSelect;
-    this.firebase.on("child_added", function(snapshot){
-      var data = snapshot.val();
-      playerOneSelect = data.playerOne;
-      playerTwoSelect = data.playerTwo;
-    });
 
-    if(playerOneSelect == "selected" || playerTwoSelect == "selected"){
+    if(this.introMenu.playerOneSelect == true || this.introMenu.playerTwoSelect == true){
       this.c.fillText("Waiting for other player", 319, 310);
     } else {
       this.c.fillText("Select a tank", 386, 310);
@@ -327,6 +319,17 @@ Game.prototype.initApp = function(){
     this.c.fill();
   }
 
+
+
+
+
+
+
+
+
+
+
+
   if(this.getOtherKeyPress){
     if(this.getOtherKeyPress.keyCode === 115){
       this.introMenu.yMod = 355;
@@ -335,22 +338,51 @@ Game.prototype.initApp = function(){
     }
   }
 
+
+
+
+
   if(this.getOtherKeyPress){
-    if(this.getOtherKeyPress.keyCode === 13 && this.introMenu.yMod === 355){
-      //P2 select
-      this.c.drawImage(this.disabledTank, this.localPlayer.sourceX,this.localPlayer.sourceY,32,32,this.introMenu.startX-75,400,this.localPlayer.w,this.localPlayer.h);
 
-      this.firebase.child('game').set({playerTwo: "selected"});
+      if(this.getOtherKeyPress.keyCode === 13 && this.introMenu.yMod === 355){
+        //P2 select
+        this.c.drawImage(this.disabledTank, this.localPlayer.sourceX,this.localPlayer.sourceY,32,32,this.introMenu.startX-75,400,this.localPlayer.w,this.localPlayer.h);
 
-    } else if (this.getOtherKeyPress.keyCode === 13 && this.introMenu.yMod === 285){
-      //P1 select
-      this.c.drawImage(this.disabledTank, this.localPlayer.sourceX,this.localPlayer.sourceY,32,32,this.introMenu.startX-75,330,this.localPlayer.w,this.localPlayer.h);
+        this.firebase.child('game').update({playerTwo: true});
 
-      //Updates database for P1 as selected
-      this.firebase.child('game').set({playerOne: "selected"});
+        // window.addEventListener(115,e,false);
 
+      } else if (this.getOtherKeyPress.keyCode === 13 && this.introMenu.yMod === 285){
+
+        //P1 select
+        this.c.drawImage(this.disabledTank, this.localPlayer.sourceX,this.localPlayer.sourceY,32,32,this.introMenu.startX-75,330,this.localPlayer.w,this.localPlayer.h);
+
+        //Updates database for P1 as selected
+        this.firebase.child('game').update({playerOne: true});
+
+      }
+      this.getOtherKeyPress = undefined;
     }
-  }
+
+    var t = this;
+    this.firebase.on("child_added", function(snapshot){
+      var data = snapshot.val();
+      if(data.playerOne){
+        t.introMenu.playerOneSelect = true;
+      } else {
+        t.introMenu.playerOneSelect = false;
+      }
+      if (data.playerTwo){
+        t.introMenu.playerTwoSelect = true;
+      } else {
+        t.introMenu.playerTwoSelect = false;
+      }
+    });
+  console.log(this.introMenu.playerOneSelect);
+  console.log(this.introMenu.playerTwoSelect);
+
+
+
 
 
   if (this.isTheMouseBeingPressed == true) {
