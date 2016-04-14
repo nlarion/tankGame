@@ -17,6 +17,7 @@ var Tank = function (player,x,y, image) {
   this.radius = 30;
   this.tankLives = 3;
   this.rotation = 0;
+  this.isFiring = false;
   this.rotationVel = 10;
   this.facingX = 0;
   this.facingY = 0;
