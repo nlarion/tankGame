@@ -17,7 +17,6 @@ var Game = function(){
   this.c = this.$canvas[0].getContext('2d');
   this.level = 1;
   this.currentLevel = new Level(1);
-  this.currentPlayer = new Player();
   this.localPlayer = new Tank();
   this.explosion = new Explosion();
   //this.firebase = new Firebase('https://epicodus-tank.firebaseio.com/');
@@ -53,8 +52,8 @@ Game.prototype.gameManager = function(){
     this.explosionImg.src = "images/explosion.png";
     var t = this;
     this.$canvas.mousemove(function(e){
-      t.currentPlayer.x = e.offsetX-((t.currentLevel.bricks[0].w)/2);
-      //console.log("x: "+e.offsetX+"y: "+e.offsetY);
+      //maybe you need mouse?
+      //TODO: maybe delete this
     });
     console.log(this);
     this.$canvas.click(function() {
@@ -253,7 +252,7 @@ Game.prototype.changeStateAndRestartGame = function(){
   levelConstructs = new LevelConstruct();
   this.level = 1;
   this.currentLevel = new Level(1);
-  this.currentPlayer = new Player();
+  //TODO:reset localPlayer?
   this.audio.stop();
   this.localPlayer.tankLives = 3;
   this.localPlayer.x = 50;
@@ -268,14 +267,6 @@ Game.prototype.gameLoop = function(){
   });
   if (this.firstRun) {
     this.firstRun = false;
-  }
-  if(this.getKeyPress){
-    if(this.getKeyPress.which === 108){
-      this.currentPlayer.lives++;
-    }else if(this.getKeyPress.which === 110){
-      this.handleLevelAdvance();
-    }
-    this.getKeyPress = undefined;
   }
   this.clearCanvasAndDisplayDetails();
   if(this.currentLevel.bricks[1].y === this.currentLevel.bricks[1].finalY) {
@@ -427,29 +418,9 @@ Game.prototype.drawBricks = function(){
   this.c.fillStyle ="#144252";
   for (var i = 0; i < this.currentLevel.bricks.length; i++) {
     this.currentLevel.bricks[i].player ? false : this.currentLevel.bricks[i].y +=(200-this.currentLevel.bricks[i].y)*.1; //simple easing.
-    if(this.currentLevel.bricks[i].player){
-      this.currentLevel.bricks[i].velx = (this.currentPlayer.x-this.currentLevel.bricks[i].x)*.4;
-      if(this.currentLevel.bricks[i].paddleTime > 0) {
-        this.currentLevel.bricks[i].w += (this.currentLevel.bricks[i].finalw - this.currentLevel.bricks[i].w)*.1;
-        this.currentLevel.bricks[i].paddleTime--;
-      } else {
-        this.currentLevel.bricks[i].w -= (this.currentLevel.bricks[i].w - 65)*.1;
-      }
-      if(this.currentLevel.bricks[i].machineGunTime > 0) {
-        if(this.currentLevel.bricks[i].machineGunTime%16 === 0) {
-          var newProjectile1 = new Projectile(this.currentLevel.bricks[i].x,(this.currentLevel.bricks[i].y-this.currentLevel.bricks[i].h));
-          this.currentLevel.projectiles.push(newProjectile1);
-          this.currentLevel.bricks[i].playerFlashTimer = 2;
-        } else if(this.currentLevel.bricks[i].machineGunTime%8 === 0) {
-          var newProjectile2 = new Projectile((this.currentLevel.bricks[i].x+this.currentLevel.bricks[i].w),(this.currentLevel.bricks[i].y-this.currentLevel.bricks[i].h));
-          this.currentLevel.projectiles.push(newProjectile2);
-          this.currentLevel.bricks[i].playerFlashTimer = 2;
-        }
-        this.currentLevel.bricks[i].machineGunTime--;
-      }
-    } else {
-      this.currentLevel.bricks[i].y = easeOutBack(this.currentLevel.bricks[i].timer,0,this.currentLevel.bricks[i].finalY,50);
-    }
+
+    this.currentLevel.bricks[i].y = easeOutBack(this.currentLevel.bricks[i].timer,0,this.currentLevel.bricks[i].finalY,50);
+
     this.currentLevel.bricks[i].y += this.currentLevel.bricks[i].vely;
     this.currentLevel.bricks[i].x += this.currentLevel.bricks[i].velx;
     if(i===0) {
@@ -558,13 +529,9 @@ Game.prototype.checkCollision = function(thing1,thing2) {
 Game.prototype.testWalls = function(){
   for (var i = 0, max = this.currentLevel.balls.length; i < max; i = i + 1) {
     if(this.currentLevel.balls[i].y+this.currentLevel.balls[i].h>canvas.height){
-      // this.currentLevel.balls[i].vely *= -1;
       this.isTheMouseBeingPressed = false;
       this.currentLevel.balls.splice(i,1);
-      if(this.currentLevel.balls.length === 0 && this.currentPlayer.lives > 1){
-        this.currentPlayer.lives--;
-        this.currentLevel.makeBall(this.currentLevel.bricks[0].x+32,538);
-      } else if (this.currentLevel.balls.length > 0) {
+      if (this.currentLevel.balls.length > 0) {
         console.log('it works');
       }else {
         this.firstRun = true;
