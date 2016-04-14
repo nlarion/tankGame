@@ -25,7 +25,6 @@ var Level = function(currentLevel) {
   this.winCriteria = 0;
   this.getCurrentLevelprops();
   this.makeBall(0,0);
-
 }
 
 Level.prototype.makeBall = function(x,y,rotation){

@@ -37,7 +37,7 @@ Game.prototype.gameManager = function(){
     this.audio.addUri('sounds/breakoutLoop3.mp3',2720,"loop3");
     this.audio.addUri('sounds/breakoutLoop4.mp3',2700,"loop4");
     this.audio.addUri('sounds/breakoutLoop5.mp3',7990,"loop5");
-    this.sounds = {death: new Audio('sounds/deathExplosion.mp3'), death2: new Audio('sounds/howieScream.mp3')};
+    this.sounds = {death: new Audio('sounds/deathExplosion.mp3'), death2: new Audio('sounds/howieScream.mp3'), shoot: new Audio('sounds/new-shoot.mp3')};
     // this.audio = new Audio('sounds/breakoutLoop1.mp3');
     //playerOne was here
     this.playerOne = new Image();
@@ -139,6 +139,7 @@ Game.prototype.renderLocalPlayer = function(){
   				}
    			break;
       case 32:
+      this.sounds.shoot.play();
         var angleInRadians = this.localPlayer.rotation * Math.PI / 180;
         this.localPlayer.facingX=Math.cos(angleInRadians);
         this.localPlayer.facingY=Math.sin(angleInRadians);
@@ -249,6 +250,10 @@ Game.prototype.changeStateAndRestartGame = function(){
   this.currentLevel = new Level(1);
   this.currentPlayer = new Player();
   this.audio.stop();
+  this.localPlayer.tankLives = 3;
+  this.localPlayer.x = 50;
+  this.localPlayer.y =50;
+  this.localPlayer.rotation = 0;
   this.appState = STATE_INIT;
 }
 
@@ -292,13 +297,11 @@ Game.prototype.clearCanvasAndDisplayDetails = function(){
   this.c.fillRect(0,0,canvas.width,canvas.height);
   this.c.font = "12px serif";
   this.c.fillStyle = "white";
-  this.c.fillText ("Lives: ", 20, canvas.height - 20);
-  this.c.fillText ("sourceX: "+this.localPlayer.sourceX+" FrameIndex: "+ this.localPlayer.frameIndex, canvas.width-170,canvas.height -20);
-  this.c.fillText ("MathFloor: "+Math.floor(this.localPlayer.animationFrames[this.localPlayer.frameIndex] % 12)+" animation frame: "+ this.localPlayer.animationFrames[this.localPlayer.frameIndex], canvas.width-170,canvas.height -50);
-  for (var i = 0; i < this.currentPlayer.lives-1; i++) {
+  this.c.fillText ("Health: ", 20, canvas.height - 20);
+  for (var i = 0; i < this.localPlayer.tankLives; i++) {
     this.c.fillStyle = "blue";
     this.c.beginPath();
-    this.c.arc((i*20)+60,canvas.height-25,this.currentLevel.balls[0].w/2,0,Math.PI*2,true);
+    this.c.arc((i*20)+70,canvas.height-25,this.currentLevel.balls[0].w/2,0,Math.PI*2,true);
     this.c.closePath();
     this.c.fill();
     // this.c.fillRect((i*20)+60,canvas.height -30,10,10);
@@ -604,9 +607,15 @@ Game.prototype.gameOverScreen = function(){
   this.c.strokeStyle = '#000000';
   this.c.font = " "+ canvas.width / 10 + "px serif";
   this.c.fillStyle = "#fff";
-  this.c.fillText ("GameOver :(",canvas.width / 4, canvas.height / 2);
+
+  if(this.localPlayer.tankLives <= 0) {
+    this.c.fillText ("Blue won!",canvas.width / 4, canvas.height / 2);
+  } else {
+    this.c.fillText ("Red won!",canvas.width / 4, canvas.height / 2);
+  }
+
   this.c.font = " "+ canvas.width / 30 + "px serif";
-  this.c.fillText("Click to Try Again...",canvas.width / 2.8, canvas.height / 1.5);
+  this.c.fillText("Click to Return To The Start Menu",canvas.width / 4, canvas.height / 1.5);
   if (this.isTheMouseBeingPressed == true) {
     this.changeStateAndRestartGame();
   }
