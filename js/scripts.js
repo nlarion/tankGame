@@ -314,6 +314,13 @@ Game.prototype.initApp = function(){
       this.c.fillText("Waiting for other player", 319, 310);
     } else {
       this.c.fillText("Select a tank", 386, 310);
+
+      if(this.introMenu.playerOneSelect){
+        this.introMenu.yMod = 355;
+      } else if (this.introMenu.playerTwoSelect){
+        this.introMenu.yMod = 285;
+      }
+
     //Draws select triangle
       this.c.beginPath();
       this.c.moveTo(70+this.introMenu.xMod,60+this.introMenu.yMod);
@@ -329,12 +336,12 @@ Game.prototype.initApp = function(){
         } else if (this.getOtherKeyPress.keyCode === 119){
           this.introMenu.yMod = 285;
         }
-        if(this.getOtherKeyPress.keyCode === 13 && this.introMenu.yMod === 355){
           //Listens for P2 select
+        if(this.getOtherKeyPress.keyCode === 13 && this.introMenu.yMod === 355){
           this.firebase.child('game').update({playerTwo: true});
           this.introMenu.localPlayerSelect = true;
-        } else if (this.getOtherKeyPress.keyCode === 13 && this.introMenu.yMod === 285){
           //Listens for P1 select
+        } else if (this.getOtherKeyPress.keyCode === 13 && this.introMenu.yMod === 285){
           this.firebase.child('game').update({playerOne: true});
           this.introMenu.localPlayerSelect = true;
         }
@@ -357,14 +364,17 @@ Game.prototype.initApp = function(){
     } else {
       t.introMenu.playerTwoSelect = false;
     }
+    if (!data.playerOne && !data.playerTwo){
+      t.introMenu.localPlayerSelect = false;
+    }
   });
 
-  // if (this.isTheMouseBeingPressed == true) {
-  //   this.isTheMouseBeingPressed = false;
-  //   this.firstRun = true;
-  //   this.audio.stop();
-  //   this.appState = STATE_PLAYING;
-  // }
+  if (this.isTheMouseBeingPressed == true) {
+    this.isTheMouseBeingPressed = false;
+    this.firstRun = true;
+    this.audio.stop();
+    this.appState = STATE_PLAYING;
+  }
 }
 
 Game.prototype.drawBricks = function(){
