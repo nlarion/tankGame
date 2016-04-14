@@ -41,9 +41,11 @@ Game.prototype.gameManager = function(){
     //playerOne was here
     this.playerOne = new Image();
     this.playerTwo = new Image();
+    this.disabledTank = new Image();
     this.logo = new Image();
     this.playerOne.src = "images/redtank.png"; // load all assets now so
     this.playerTwo.src = "images/bluetank.png"; // load all assets now so
+    this.disabledTank.src = "images/disabledtank.png"; // load all assets now so
     this.logo.src = "images/logo.png";
     var t = this;
     this.$canvas.mousemove(function(e){
@@ -84,6 +86,7 @@ Game.prototype.gameManager = function(){
 
 Game.prototype.renderLocalPlayer = function(){
   if(this.getOtherKeyPress){
+    console.log(this.getOtherKeyPress.keyCode);
     switch (this.getOtherKeyPress.keyCode) {
 			case undefined:
  				 this.localPlayer.frameIndex=0;
@@ -273,7 +276,6 @@ Game.prototype.initApp = function(){
   this.c.fillStyle = '#000';
   this.c.fillRect(0, 0, canvas.width, canvas.height);
   this.c.fillStyle = "#fff";
-  this.c.font = "30px monospace";
   this.c.strokeRect(1, 1, canvas.width - 2, canvas.height - 2);
 
   this.c.drawImage(this.playerOne, this.localPlayer.sourceX,this.localPlayer.sourceY,32,32,this.introMenu.startX-75,330,this.localPlayer.w,this.localPlayer.h);
@@ -289,12 +291,34 @@ Game.prototype.initApp = function(){
     this.introMenu.textFade = fadeCount.toFixed(2);
     }
 
+    this.c.font = "25px monospace";
     this.c.fillStyle = "rgba(255, 255, 255, " + this.introMenu.textFade + ")";
-    this.c.drawImage(this.logo, 260, 70, 530, 190);
-    this.c.fillText("Select a tank", 376, 310);
+
+    //retrieves P1/P2 selected status and displays waiting message
+    var playerOneSelect;
+    var playerTwoSelect;
+    this.firebase.on("child_added", function(snapshot){
+      var data = snapshot.val();
+      playerOneSelect = data.playerOne;
+      playerTwoSelect = data.playerTwo;
+    });
+
+    if(playerOneSelect == "selected" || playerTwoSelect == "selected"){
+      this.c.fillText("Waiting for other player", 319, 310);
+    } else {
+      this.c.fillText("Select a tank", 386, 310);
+
+    }
+
+    // this.c.font = "20px monospace";
+    // this.c.fillText("\xA9 2016",430, 525);
+
+
+    this.c.font = "30px monospace";
+    this.c.fillStyle = "rgba(255, 255, 255, " + this.introMenu.textFade + ")";
+    this.c.drawImage(this.logo, 290, 70, 430, 180);
     this.c.fillText("Player 1",this.introMenu.startX, 365);
     this.c.fillText("Player 2",this.introMenu.startX, 435);
-    this.c.fillText("\xA9 2016",430, 525);
 
     this.c.beginPath();
     this.c.moveTo(70+this.introMenu.xMod,60+this.introMenu.yMod);
@@ -302,6 +326,32 @@ Game.prototype.initApp = function(){
     this.c.lineTo(70+this.introMenu.xMod, 80+this.introMenu.yMod);
     this.c.fill();
   }
+
+  if(this.getOtherKeyPress){
+    if(this.getOtherKeyPress.keyCode === 115){
+      this.introMenu.yMod = 355;
+    } else if (this.getOtherKeyPress.keyCode === 119){
+      this.introMenu.yMod = 285;
+    }
+  }
+
+  if(this.getOtherKeyPress){
+    if(this.getOtherKeyPress.keyCode === 13 && this.introMenu.yMod === 355){
+      //P2 select
+      this.c.drawImage(this.disabledTank, this.localPlayer.sourceX,this.localPlayer.sourceY,32,32,this.introMenu.startX-75,400,this.localPlayer.w,this.localPlayer.h);
+
+      this.firebase.child('game').set({playerTwo: "selected"});
+
+    } else if (this.getOtherKeyPress.keyCode === 13 && this.introMenu.yMod === 285){
+      //P1 select
+      this.c.drawImage(this.disabledTank, this.localPlayer.sourceX,this.localPlayer.sourceY,32,32,this.introMenu.startX-75,330,this.localPlayer.w,this.localPlayer.h);
+
+      //Updates database for P1 as selected
+      this.firebase.child('game').set({playerOne: "selected"});
+
+    }
+  }
+
 
   if (this.isTheMouseBeingPressed == true) {
     this.isTheMouseBeingPressed = false;
