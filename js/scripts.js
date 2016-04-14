@@ -4,7 +4,7 @@ const STATE_INIT = 10,
   STATE_PLAYING = 40,
   STATE_GAMEOVER = 50,
   STATE_WIN = 60,
-  STATE_LOADING_LEVEL = 70;
+  STATE_LOADING_LEVEL = 70,
   STATE_CREDITS_SCREEN = 80;
 
 var Game = function(){
@@ -12,7 +12,7 @@ var Game = function(){
   this.pointImage = new Image();
   this.appState = STATE_LOADING;
   this.isTheMouseBeingPressed = false;
-  this.introCount = 0;
+  this.introCount = {finalX: 475, startX: 1100, textFade: 0, xMod: 270, yMod: 285};
   this.$canvas = $('canvas');
   this.c = this.$canvas[0].getContext('2d');
   this.level = 1;
@@ -30,8 +30,19 @@ Game.prototype.gameManager = function(){
   case STATE_LOADING:
     this.firebase.set({game: 'Game'});
     //load assets
+    this.audio = new SeamlessLoop();
+    this.audio.addUri('sounds/breakoutLoop1.mp3',5350,"loop1");
+    this.audio.addUri('sounds/breakoutLoop2.mp3',18700,"loop2");
+    this.audio.addUri('sounds/breakoutLoop3.mp3',2720,"loop3");
+    this.audio.addUri('sounds/breakoutLoop4.mp3',2700,"loop4");
+    this.audio.addUri('sounds/breakoutLoop5.mp3',7990,"loop5");
+    this.sounds = {gameOver: new Audio('sounds/breakoutGameOver.mp3'), normalHit: new Audio('sounds/SG280_BD_11.mp3'), lightHit: new Audio('sounds/SG280_Bongo_08.mp3'), powerUp: new Audio('sounds/SG280_Cym_01.mp3'), steady: new Audio('sounds/SG280_Tom_02.mp3'), mediumHit: new Audio('sounds/SG280_SD_02.mp3')};
+    // this.audio = new Audio('sounds/breakoutLoop1.mp3');
+    //playerOne was here
     this.playerOne = new Image();
+    this.playerTwo = new Image();
     this.playerOne.src = "images/redtank.png"; // load all assets now so
+    this.playerTwo.src = "images/bluetank.png"; // load all assets now so
     var t = this;
     this.$canvas.mousemove(function(e){
       t.currentPlayer.x = e.offsetX-((t.currentLevel.bricks[0].w)/2);
@@ -45,7 +56,7 @@ Game.prototype.gameManager = function(){
       t.getKeyPress = e;
       t.getOtherKeyPress = e;
     });
-    this.appState = STATE_PLAYING;
+    this.appState = STATE_INIT;
     break;
   case STATE_RESET:
     resetApp(); //doesn't exist yet
@@ -71,12 +82,8 @@ Game.prototype.gameManager = function(){
 
 Game.prototype.renderLocalPlayer = function(){
   if(this.getOtherKeyPress){
-    console.log(this.getOtherKeyPress);
-    //console.log(this.localPlayer);
     switch (this.getOtherKeyPress.keyCode) {
-
 			case undefined:
-      	//console.log(this.getOtherKeyPress);
  				 this.localPlayer.frameIndex=0;
 				 break;
 			case 100:
@@ -90,10 +97,6 @@ Game.prototype.renderLocalPlayer = function(){
 					this.localPlayer.frameIndex++;
 				}
  				break;
-			case 'rightstop':
- 				this.localPlayer.frameIndex=0;
-				GetKeyCodeVar=0;
- 				break;
  			case 97:
  				this.localPlayer.sourceX=0;
 				this.localPlayer.sourceY=96;
@@ -105,21 +108,13 @@ Game.prototype.renderLocalPlayer = function(){
 					this.localPlayer.frameIndex++;
 				}
  			break;
- 			case 'leftstop':
- 				this.localPlayer.frameIndex=0;
-				GetKeyCodeVar=0;
- 			break;
  			case 115:
  				this.localPlayer.sourceX=0;
 				this.localPlayer.sourceY=96;
         var angleInRadians = this.localPlayer.rotation * Math.PI / 180;
         this.localPlayer.facingX=Math.cos(angleInRadians);
         this.localPlayer.facingY=Math.sin(angleInRadians);
-        console.log(this.localPlayer.facingX);
-        console.log(this.localPlayer.facingY);
-
         this.localPlayer.x=this.localPlayer.x-(this.localPlayer.dx*this.localPlayer.facingX);
-        console.log(this.localPlayer.x);
         this.localPlayer.y=this.localPlayer.y-(this.localPlayer.dy*this.localPlayer.facingY);
 				if (this.localPlayer.frameIndex>=this.localPlayer.animationFrames.length-1){
 					this.localPlayer.frameIndex=0;
@@ -127,45 +122,32 @@ Game.prototype.renderLocalPlayer = function(){
 					this.localPlayer.frameIndex++;
 				}
  				break;
- 			case 'downstop':
- 				this.localPlayer.frameIndex=0;
-				GetKeyCodeVar=0;
- 			break;
  			case 119:
-      var angleInRadians = this.localPlayer.rotation * Math.PI / 180;
-      this.localPlayer.facingX=Math.cos(angleInRadians);
-      this.localPlayer.facingY=Math.sin(angleInRadians);
-      console.log(this.localPlayer.facingX);
-      console.log(this.localPlayer.facingY);
-
-      this.localPlayer.x=this.localPlayer.x+(this.localPlayer.dx*this.localPlayer.facingX);
-      console.log(this.localPlayer.x);
-      this.localPlayer.y=this.localPlayer.y+(this.localPlayer.dy*this.localPlayer.facingY);
-      console.log(this.localPlayer.y); //vertical
-				if (this.localPlayer.frameIndex>=this.localPlayer.animationFrames.length-1){
-					this.localPlayer.frameIndex=0;
-				} else {
-					this.localPlayer.frameIndex++;
-				}
- 			break;
-  			case 'upstop':
- 				this.localPlayer.frameIndex=0;
-				GetKeyCodeVar=0;
- 			break;
+        var angleInRadians = this.localPlayer.rotation * Math.PI / 180;
+        this.localPlayer.facingX=Math.cos(angleInRadians);
+        this.localPlayer.facingY=Math.sin(angleInRadians);
+        this.localPlayer.x=this.localPlayer.x+(this.localPlayer.dx*this.localPlayer.facingX);
+        this.localPlayer.y=this.localPlayer.y+(this.localPlayer.dy*this.localPlayer.facingY);
+  				if (this.localPlayer.frameIndex>=this.localPlayer.animationFrames.length-1){
+  					this.localPlayer.frameIndex=0;
+  				} else {
+  					this.localPlayer.frameIndex++;
+  				}
+   			break;
       case 32:
-      var angleInRadians = this.localPlayer.rotation * Math.PI / 180;
-      this.localPlayer.facingX=Math.cos(angleInRadians);
-      this.localPlayer.facingY=Math.sin(angleInRadians);
-			this.currentLevel.makeBall(this.localPlayer.x, this.localPlayer.y,this.localPlayer.rotation);
- 			break;
-  			case 'fire':
+        var angleInRadians = this.localPlayer.rotation * Math.PI / 180;
+        this.localPlayer.facingX=Math.cos(angleInRadians);
+        this.localPlayer.facingY=Math.sin(angleInRadians);
+  			this.currentLevel.makeBall(this.localPlayer.x, this.localPlayer.y,this.localPlayer.rotation);
+   			break;
+			case 'fire':
 				GetKeyCodeVar=0;
  			break;
-
 		}
     this.getOtherKeyPress = undefined;
   }
   // this.c.fillRect(this.localPlayer.x,this.localPlayer.y,this.localPlayer.w,this.localPlayer.h);
+
   this.localPlayer.sourceX=Math.floor(this.localPlayer.animationFrames[this.localPlayer.frameIndex] % 7) *32;
   // this.c.drawImage(this.playerOne, this.localPlayer.sourceX,this.localPlayer.sourceY,32,32,this.localPlayer.x,this.localPlayer.y,this.localPlayer.w,this.localPlayer.h);
   //this.c.fillRect(this.localPlayer.x,this.localPlayer.y,this.localPlayer.w,this.localPlayer.h);
@@ -188,6 +170,9 @@ Game.prototype.renderLocalPlayer = function(){
   this.c.restore();
 }
 
+Game.prototype.renderRemotePlayer = function(){
+
+}
 
 Game.prototype.loadingLevelScreen = function(){
   if (this.firstRun) {
@@ -227,7 +212,7 @@ Game.prototype.changeStateAndRestartGame = function(){
 Game.prototype.gameLoop = function(){
   this.firebase.on("value", function(snapshot){
     var data = snapshot.val();
-    })
+  });
   if (this.firstRun) {
     this.firstRun = false;
   }
@@ -264,33 +249,55 @@ Game.prototype.clearCanvasAndDisplayDetails = function(){
   this.c.fillRect(0,0,canvas.width,canvas.height);
   this.c.font = "12px serif";
   this.c.fillStyle = "white";
+  this.c.fillText ("Lives: ", 20, canvas.height - 20);
   this.c.fillText ("sourceX: "+this.localPlayer.sourceX+" FrameIndex: "+ this.localPlayer.frameIndex, canvas.width-170,canvas.height -20);
   this.c.fillText ("MathFloor: "+Math.floor(this.localPlayer.animationFrames[this.localPlayer.frameIndex] % 12)+" animation frame: "+ this.localPlayer.animationFrames[this.localPlayer.frameIndex], canvas.width-170,canvas.height -50);
+  for (var i = 0; i < this.currentPlayer.lives-1; i++) {
+    this.c.fillStyle = "blue";
+    this.c.beginPath();
+    this.c.arc((i*20)+60,canvas.height-25,this.currentLevel.balls[0].w/2,0,Math.PI*2,true);
+    this.c.closePath();
+    this.c.fill();
     // this.c.fillRect((i*20)+60,canvas.height -30,10,10);
+  }
 }
 
 Game.prototype.initApp = function(){
-  if (this.firstRun) {w
+  if (this.firstRun) {
+    this.audio.start("loop5");
     this.firstRun = false;
   }
-  fadeIn = this.introCount + 30;
-  colorModifier = fadeIn.toString(16);
-  this.c.fillStyle = '#0001' + colorModifier;
+
+  this.c.fillStyle = '#000';
   this.c.fillRect(0, 0, canvas.width, canvas.height);
-  //Box
-  this.c.strokeStyle = '#000000';
+  this.c.fillStyle = "#fff";
+  this.c.font = "30px monospace";
   this.c.strokeRect(1, 1, canvas.width - 2, canvas.height - 2);
-  this.c.font = " "+ canvas.width / 10 + "px serif";
-  this.c.fillStyle = "#" + this.introCount + "";
-  this.c.fillText ("Tanks",canvas.width / 3, canvas.height / 2);
-  if(this.introCount<150){
-    this.introCount++;
-  }else{
-    this.c.strokeStyle = '#000000';
-    this.c.font = "Test"+ canvas.width / 30 + "px serif";
-    this.c.fillStyle = "white";
-    this.c.fillText("Click to Start a New Game",canvas.width / 3, canvas.height / 1.5);
+
+  this.c.drawImage(this.playerOne, this.localPlayer.sourceX,this.localPlayer.sourceY,32,32,this.introCount.startX-75,330,this.localPlayer.w,this.localPlayer.h);
+  this.c.drawImage(this.playerTwo, this.localPlayer.sourceX,this.localPlayer.sourceY,32,32,this.introCount.startX-75,400,this.localPlayer.w,this.localPlayer.h);
+
+  if(this.introCount.finalX<this.introCount.startX){
+    this.introCount.startX-=40;
   }
+  if(this.introCount.startX <= this.introCount.finalX){
+    if(this.introCount.textFade <= 1){
+      var fadeCount = parseFloat(this.introCount.textFade);
+      fadeCount += .03;
+    this.introCount.textFade = fadeCount.toFixed(2);
+    }
+
+    this.c.fillStyle = "rgba(255, 255, 255, " + this.introCount.textFade + ")";
+    this.c.fillText("Player 1",this.introCount.startX, 365);
+    this.c.fillText("Player 2",this.introCount.startX, 435);
+
+    this.c.beginPath();
+    this.c.moveTo(70+this.introCount.xMod,60+this.introCount.yMod);
+    this.c.lineTo(80+this.introCount.xMod, 70+this.introCount.yMod);
+    this.c.lineTo(70+this.introCount.xMod, 80+this.introCount.yMod);
+    this.c.fill();
+  }
+
   if (this.isTheMouseBeingPressed == true) {
     this.isTheMouseBeingPressed = false;
     this.firstRun = true;
@@ -354,6 +361,7 @@ Game.prototype.drawBricks = function(){
 };
 
 Game.prototype.collide = function(){
+
   for (var i = 0; i < this.currentLevel.balls.length; i++) {
     for (var j = 0; j < this.currentLevel.bricks.length; j++) {
       if ( this.checkCollision(this.currentLevel.balls[i],this.currentLevel.bricks[j]) ) { //left and right of ball
@@ -424,6 +432,7 @@ Game.prototype.collide = function(){
 
 Game.prototype.checkCollision = function(thing1,thing2) {
   if((((thing1.y+thing1.vely) + thing1.h) > (thing2.y)) && ((thing1.y+thing1.vely) < (thing2.y + thing2.h)) && (((thing1.x+thing1.velx) + thing1.w) > thing2.x) && ((thing1.x+thing1.velx) < (thing2.x + thing2.w))){
+    console.log("test");
     return true;
   } else {
     return false;
@@ -511,44 +520,6 @@ Game.prototype.ballCollide = function(){
 
       }
       //this.doCollide(i,j);
-    }
-  }
-  for(var i=0; i < this.currentLevel.bricks.length; i++){
-    if(this.checkCollision(this.localPlayer, this.currentLevel.bricks[i])){
-      // console.log('collision');
-      var tankY = this.localPlayer.y;
-      var tankX = this.localPlayer.x;
-      var tankW = this.localPlayer.w;
-      var tankH = this.localPlayer.h;
-
-      var brickY = this.currentLevel.bricks[i].y;
-      var brickX = this.currentLevel.bricks[i].x;
-      var brickW = this.currentLevel.bricks[i].w;
-      var brickH = this.currentLevel.bricks[i].h;
-      console.log("tanky "+ tankY + " tankx " + tankX + " tankw " + tankW + " tankH " +tankH);
-      console.log("bricky "+ brickY + " brickx " + brickX + " brickw " + parseInt(brickH));
-
-      // if ( (this.localPlayer.y + this.localPlayer.h > this.currentLevel.bricks[i].y) &&
-      //   (this.localPlayer.y < this.currentLevel.bricks[i].y + this.currentLevel.bricks[i].h) &&
-      //   ((this.localPlayer.x + this.localPlayer.w > this.currentLevel.bricks[i].x) &&
-      //   (this.localPlayer.x > this.currentLevel.bricks[i].x ) || (this.localPlayer.x + this.localPlayer.w < this.currentLevel.bricks[i].x) &&
-      //   (this.localPlayer.x < this.currentLevel.bricks[i].x)) ) {
-      if (
-        ( ((tankX > brickX) && (tankX < (brickX + brickW))) || ( ((tankX + tankW) > brickX) && ((tankX + tankW) < (brickX + brickW)) ) )
-        && ( (tankY < (brickY + brickH)) && (tankY > (brickY + (brickH / 2))) )
-
-
-        ){
-        console.log("Im tripping");
-
-        this.localPlayer.y = this.localPlayer.y+5;
-        //this.localPlayer.dx = 0;
-        //this.localPlayer.dy = 0;//+0.5 increases the ball speed every time it hits something.
-        //try and make the ball do something here.
-      } else {
-        console.log("test");
-        this.localPlayer.y = this.localPlayer.y-5;
-      }
     }
   }
 };
