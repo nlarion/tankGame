@@ -84,7 +84,6 @@ Game.prototype.gameManager = function(){
 
 Game.prototype.renderLocalPlayer = function(){
   if(this.getOtherKeyPress){
-    console.log(this.getOtherKeyPress);
     switch (this.getOtherKeyPress.keyCode) {
 			case undefined:
  				 this.localPlayer.frameIndex=0;
@@ -290,11 +289,11 @@ Game.prototype.initApp = function(){
     this.introMenu.textFade = fadeCount.toFixed(2);
     }
 
-    this.c.fillStyle = "rgba(255, 255, 255, " + this.introCount.textFade + ")";
+    this.c.fillStyle = "rgba(255, 255, 255, " + this.introMenu.textFade + ")";
     this.c.drawImage(this.logo, 260, 70, 530, 190);
     this.c.fillText("Select a tank", 376, 310);
-    this.c.fillText("Player 1",this.introCount.startX, 365);
-    this.c.fillText("Player 2",this.introCount.startX, 435);
+    this.c.fillText("Player 1",this.introMenu.startX, 365);
+    this.c.fillText("Player 2",this.introMenu.startX, 435);
     this.c.fillText("\xA9 2016",430, 525);
 
     this.c.beginPath();
@@ -302,18 +301,6 @@ Game.prototype.initApp = function(){
     this.c.lineTo(80+this.introMenu.xMod, 70+this.introMenu.yMod);
     this.c.lineTo(70+this.introMenu.xMod, 80+this.introMenu.yMod);
     this.c.fill();
-  }
-
-  if(this.getOtherKeyPress){
-    if(this.getOtherKeyPress.keyCode === 115){
-      this.introMenu.yMod = 355;
-    }
-    if(this.getOtherKeyPress.keyCode === 119){
-      this.introMenu.yMod = 285;
-    }
-    if(this.getOtherKeyPress.keyCode === 13 && this.introMenu.xMod === 285){
-        this.localPlayer = this.playerOne; //TODO: Player select
-    }
   }
 
   if (this.isTheMouseBeingPressed == true) {
