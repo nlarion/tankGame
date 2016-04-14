@@ -1,4 +1,4 @@
-var Tank = function () {
+var Tank = function (player,x,y, image) {
   this.dx = 5; //player horizonal speed
 	this.dy = 5; //player vertical speed
   this.animationFrames = [0,1,2,3,4,5,6,7];
@@ -7,8 +7,8 @@ var Tank = function () {
   this.sourceY = 96;
   this.w = 50;
   this.h = 50;
-  this.x = 50;
-  this.y = 50;
+  this.x = x;
+  this.y = y;
   this.orientation = 0;
   this.tankLives = 3;
   this.isHit = false;
@@ -20,4 +20,6 @@ var Tank = function () {
   this.rotationVel = 10;
   this.facingX = 0;
   this.facingY = 0;
+  this.player = player;
+  this.image = image;
 };
