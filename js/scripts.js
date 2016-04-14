@@ -92,7 +92,7 @@ Game.prototype.renderLocalPlayer = function(){
 				this.localPlayer.rotation += this.localPlayer.rotationVel;
         // this.localPlayer.y=this.localPlayer.y-this.localPlayer.dy;
 				if (this.localPlayer.frameIndex>=this.localPlayer.animationFrames.length-1){
-					this.localPlayer.frameIndex=6;
+					this.localPlayer.frameIndex=0;
 				} else {
 					this.localPlayer.frameIndex++;
 				}
@@ -103,11 +103,11 @@ Game.prototype.renderLocalPlayer = function(){
         this.localPlayer.rotation -= this.localPlayer.rotationVel;
 				// this.localPlayer.x=this.localPlayer.x-this.localPlayer.dx; //horizonal
 				if (this.localPlayer.frameIndex>=this.localPlayer.animationFrames.length-1){
-					this.localPlayer.frameIndex=7;
+					this.localPlayer.frameIndex=0;
 				} else {
 					this.localPlayer.frameIndex++;
 				}
- 			  break;
+ 			break;
  			case 115:
  				this.localPlayer.sourceX=0;
 				this.localPlayer.sourceY=96;
@@ -117,7 +117,7 @@ Game.prototype.renderLocalPlayer = function(){
         this.localPlayer.x=this.localPlayer.x-(this.localPlayer.dx*this.localPlayer.facingX);
         this.localPlayer.y=this.localPlayer.y-(this.localPlayer.dy*this.localPlayer.facingY);
 				if (this.localPlayer.frameIndex>=this.localPlayer.animationFrames.length-1){
-					this.localPlayer.frameIndex=2;
+					this.localPlayer.frameIndex=0;
 				} else {
 					this.localPlayer.frameIndex++;
 				}
@@ -128,13 +128,12 @@ Game.prototype.renderLocalPlayer = function(){
         this.localPlayer.facingY=Math.sin(angleInRadians);
         this.localPlayer.x=this.localPlayer.x+(this.localPlayer.dx*this.localPlayer.facingX);
         this.localPlayer.y=this.localPlayer.y+(this.localPlayer.dy*this.localPlayer.facingY);
-        //vertical
   				if (this.localPlayer.frameIndex>=this.localPlayer.animationFrames.length-1){
-  					this.localPlayer.frameIndex=2;
+  					this.localPlayer.frameIndex=0;
   				} else {
   					this.localPlayer.frameIndex++;
   				}
- 			  break;
+   			break;
       case 32:
         var angleInRadians = this.localPlayer.rotation * Math.PI / 180;
         this.localPlayer.facingX=Math.cos(angleInRadians);
@@ -142,14 +141,13 @@ Game.prototype.renderLocalPlayer = function(){
   			this.currentLevel.makeBall(this.localPlayer.x, this.localPlayer.y,this.localPlayer.rotation);
    			break;
 			case 'fire':
- 				this.localPlayer.frameIndex=3;
 				GetKeyCodeVar=0;
  			break;
-
 		}
     this.getOtherKeyPress = undefined;
   }
-  this.c.fillRect(this.localPlayer.x,this.localPlayer.y,this.localPlayer.w,this.localPlayer.h);
+  // this.c.fillRect(this.localPlayer.x,this.localPlayer.y,this.localPlayer.w,this.localPlayer.h);
+
   this.localPlayer.sourceX=Math.floor(this.localPlayer.animationFrames[this.localPlayer.frameIndex] % 7) *32;
   // this.c.drawImage(this.playerOne, this.localPlayer.sourceX,this.localPlayer.sourceY,32,32,this.localPlayer.x,this.localPlayer.y,this.localPlayer.w,this.localPlayer.h);
   //this.c.fillRect(this.localPlayer.x,this.localPlayer.y,this.localPlayer.w,this.localPlayer.h);
@@ -216,7 +214,6 @@ Game.prototype.gameLoop = function(){
     var data = snapshot.val();
   });
   if (this.firstRun) {
-    this.audio.start("loop1");
     this.firstRun = false;
   }
   if(this.getKeyPress){
@@ -244,12 +241,11 @@ Game.prototype.gameLoop = function(){
 
 Game.prototype.updateFirebase = function(){
   this.firebase.child('game').set({x: this.localPlayer.x, y: this.localPlayer.y});
-
 }
 
 // this.localPlayer.sourceX=Math.floor(this.localPlayer.animationFrames[this.localPlayer.frameIndex] % 12) *50;
 Game.prototype.clearCanvasAndDisplayDetails = function(){
-  this.c.fillStyle = "gray";
+  this.c.fillStyle = "#54717A";
   this.c.fillRect(0,0,canvas.width,canvas.height);
   this.c.font = "12px serif";
   this.c.fillStyle = "white";
@@ -311,7 +307,7 @@ Game.prototype.initApp = function(){
 }
 
 Game.prototype.drawBricks = function(){
-  this.c.fillStyle ="red";
+  this.c.fillStyle ="#144252";
   for (var i = 0; i < this.currentLevel.bricks.length; i++) {
     this.currentLevel.bricks[i].player ? false : this.currentLevel.bricks[i].y +=(200-this.currentLevel.bricks[i].y)*.1; //simple easing.
     if(this.currentLevel.bricks[i].player){
@@ -407,7 +403,6 @@ Game.prototype.collide = function(){
         && ( (tankY < (brickY + brickH)) && (tankY > (brickY + (brickH / 2))) )
         ){
         //top
-        console.log("hi");
         this.localPlayer.y = this.localPlayer.y+5;
       }
       else if (
@@ -484,6 +479,7 @@ Game.prototype.drawRenderBalls = function(){
     for (var i = 0; i < this.currentLevel.balls.length; i++) {
       if(!this.currentLevel.balls[i].launched) {
         this.currentLevel.balls[i].x = (this.currentLevel.bricks[0].x+((this.currentLevel.bricks[0].w/2)-(this.currentLevel.balls[i].w)/2));
+        this.c.fillStyle = "#D9D9D9";
         this.c.beginPath();
         this.c.arc(this.currentLevel.balls[i].x+(this.currentLevel.balls[i].w/2),this.currentLevel.balls[i].y+(this.currentLevel.balls[i].w/2),this.currentLevel.balls[i].w/2,0,Math.PI*2,true);
         this.c.closePath();
@@ -491,7 +487,7 @@ Game.prototype.drawRenderBalls = function(){
       } else {
         this.currentLevel.balls[i].x += this.currentLevel.balls[i].velx;
         this.currentLevel.balls[i].y += this.currentLevel.balls[i].vely;
-        this.c.fillStyle = "blue";
+        this.c.fillStyle = "#D9D9D9";
         this.c.beginPath();
         this.c.arc(this.currentLevel.balls[i].x+(this.currentLevel.balls[i].w/2),this.currentLevel.balls[i].y+(this.currentLevel.balls[i].w/2),this.currentLevel.balls[i].w/2,0,Math.PI*2,true);
         this.c.closePath();
@@ -513,7 +509,8 @@ Game.prototype.ballCollide = function(){
         ((this.currentLevel.balls[i].x + this.currentLevel.balls[i].w > this.localPlayer.x) &&
         (this.currentLevel.balls[i].x > this.localPlayer.x ) || (this.currentLevel.balls[i].x + this.currentLevel.balls[i].w < this.localPlayer.x) &&
         (this.currentLevel.balls[i].x < this.localPlayer.x)) ) {
-        // this.currentLevel.balls.splice(i, 1);
+        this.currentLevel.balls.splice(i, 1);
+        console.log(this.localPlayer.tankLives);
         this.localPlayer.tankLives -= 1;
 
         //+0.5 increases the ball speed every time it hits something.
@@ -523,44 +520,6 @@ Game.prototype.ballCollide = function(){
 
       }
       //this.doCollide(i,j);
-    }
-  }
-  for(var i=0; i < this.currentLevel.bricks.length; i++){
-    if(this.checkCollision(this.localPlayer, this.currentLevel.bricks[i])){
-      // console.log('collision');
-      var tankY = this.localPlayer.y;
-      var tankX = this.localPlayer.x;
-      var tankW = this.localPlayer.w;
-      var tankH = this.localPlayer.h;
-
-      var brickY = this.currentLevel.bricks[i].y;
-      var brickX = this.currentLevel.bricks[i].x;
-      var brickW = this.currentLevel.bricks[i].w;
-      var brickH = this.currentLevel.bricks[i].h;
-      console.log("tanky "+ tankY + " tankx " + tankX + " tankw " + tankW + " tankH " +tankH);
-      console.log("bricky "+ brickY + " brickx " + brickX + " brickw " + parseInt(brickH));
-
-      // if ( (this.localPlayer.y + this.localPlayer.h > this.currentLevel.bricks[i].y) &&
-      //   (this.localPlayer.y < this.currentLevel.bricks[i].y + this.currentLevel.bricks[i].h) &&
-      //   ((this.localPlayer.x + this.localPlayer.w > this.currentLevel.bricks[i].x) &&
-      //   (this.localPlayer.x > this.currentLevel.bricks[i].x ) || (this.localPlayer.x + this.localPlayer.w < this.currentLevel.bricks[i].x) &&
-      //   (this.localPlayer.x < this.currentLevel.bricks[i].x)) ) {
-      if (
-        ( ((tankX > brickX) && (tankX < (brickX + brickW))) || ( ((tankX + tankW) > brickX) && ((tankX + tankW) < (brickX + brickW)) ) )
-        && ( (tankY < (brickY + brickH)) && (tankY > (brickY + (brickH / 2))) )
-
-
-        ){
-        console.log("Im tripping");
-
-        this.localPlayer.y = this.localPlayer.y+5;
-        //this.localPlayer.dx = 0;
-        //this.localPlayer.dy = 0;//+0.5 increases the ball speed every time it hits something.
-        //try and make the ball do something here.
-      } else {
-        console.log("test");
-        this.localPlayer.y = this.localPlayer.y-5;
-      }
     }
   }
 };
