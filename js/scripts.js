@@ -9,6 +9,10 @@ const STATE_INIT = 10,
 
 var Game = function(){
   this.firstRun = true;
+  this.firstFrame = true;
+  this.tempX = null;
+  this.tempY = null;
+  this.tempRotation = null;
   this.pointImage = new Image();
   this.appState = STATE_LOADING;
   this.isTheMouseBeingPressed = false;
@@ -215,6 +219,28 @@ Game.prototype.renderRemotePlayer = function(){
       t.remotePlayer.isFiring = data.p1.isFiring;
     });
   }
+
+  if(this.firstFrame === true) {
+    this.tempX = this.remotePlayer.x;
+    this.tempY = this.remotePlayer.y;
+    this.tempRotation = this.remotePlayer.rotation;
+
+    this.firstFrame = false;
+  }
+
+  if (this.remotePlayer.y !== this.tempY || this.remotePlayer.x !== this.tempX || this.remotePlayer.rotation !== this.tempRotation) {
+    if (this.remotePlayer.frameIndex>=this.remotePlayer.animationFrames.length-1){
+      this.remotePlayer.frameIndex=0;
+      console.log("trest",this.remotePlayer.frameIndex);
+    } else {
+      this.remotePlayer.frameIndex++;
+      console.log("new test", this.remotePlayer.frameIndex);
+    }
+  }
+
+  this.tempX = this.remotePlayer.x;
+  this.tempY = this.remotePlayer.y;
+  this.tempRotation = this.remotePlayer.rotation;
 
   if (this.remotePlayer.isFiring === true){
     var angleInRadians = this.remotePlayer.rotation * Math.PI / 180;
