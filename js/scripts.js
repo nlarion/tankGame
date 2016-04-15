@@ -20,8 +20,8 @@ var Game = function(){
   this.localPlayer;
   this.remotePlayer;
   this.explosion = new Explosion();
-  this.firebase = new Firebase('https://epicodus-tank.firebaseio.com/');
-  //this.firebase = new Firebase('https://local-tank.firebaseio.com/');
+  //this.firebase = new Firebase('https://epicodus-tank.firebaseio.com/');
+  this.firebase = new Firebase('https://local-tank.firebaseio.com/');
 }
 
 Game.prototype.gameManager = function(){
@@ -30,7 +30,7 @@ Game.prototype.gameManager = function(){
     this.initApp(); // intro screen
     break;
   case STATE_LOADING:
-    this.firebase.set({game: 'Game'});
+    this.firebase.set({game: 'game'});
     //load assets
     this.audio = new SeamlessLoop();
     this.audio.addUri('sounds/tankIntro.mp3',33000,"loop2");
@@ -182,10 +182,9 @@ Game.prototype.renderLocalPlayer = function(){
       this.explosion.sourceX = 0;
       this.explosion.sourceY += 100;
     } else if (this.explosion.sourceX === 300 && this.explosion.sourceY === 900) {
-      this.localPlayer.tanklives = 3;
       this.explosion.sourceX = 0;
       this.explosion.sourceY = 0;
-      this.appState=STATE_GAMEOVER;
+      this.explosion.finished = true;
     } else {
       this.explosion.sourceX += 100;
     }
@@ -248,16 +247,25 @@ Game.prototype.renderRemotePlayer = function(){
       this.explosion.sourceX = 0;
       this.explosion.sourceY += 100;
     } else if (this.explosion.sourceX === 300 && this.explosion.sourceY === 900) {
-      this.remotePlayer.tanklives = 3;
-      this.appState=STATE_GAMEOVER;
+      this.explosion.sourceX = 0;
+      this.explosion.sourceY = 0;
+      this.explosion.finished = true;
     } else {
       this.explosion.sourceX += 100;
     }
   } else {
-    this.c.drawImage(this.remotePlayer.image, this.remotePlayer.sourceY,this.remotePlayer.sourceY,32,32,-25,-25,this.remotePlayer.w,this.remotePlayer.h);
+    this.c.drawImage(this.remotePlayer.image, this.remotePlayer.sourceX,this.remotePlayer.sourceY,32,32,-25,-25,this.remotePlayer.w,this.remotePlayer.h);
   }
   //reset the canvas
   this.c.restore();
+}
+
+Game.prototype.checkState = function(){
+  if(this.explosion.finished) {
+    this.explosion.finished = false;
+    this.isTheMouseBeingPressed = false;
+    this.appState=STATE_GAMEOVER;
+  }
 }
 
 Game.prototype.loadingLevelScreen = function(){
@@ -286,16 +294,12 @@ Game.prototype.loadingLevelScreen = function(){
 Game.prototype.changeStateAndRestartGame = function(){
   this.firstRun = true;
   this.isTheMouseBeingPressed = false;
-  levelConstructs = new LevelConstruct();
-  this.level = 1;
-  this.currentLevel = new Level(1);
+  //this.currentLevel = new Level(1);
   //TODO:reset localPlayer?
   this.audio.stop();
-  this.localPlayer.tankLives = 3;
-  this.localPlayer.x = 50;
-  this.localPlayer.y =50;
-  this.localPlayer.rotation = 0;
-  this.appState = STATE_INIT;
+  this.localPlayer = undefined;
+  this.remotePlayer = undefined;
+  this.appState = STATE_LOADING;
 }
 
 Game.prototype.gameLoop = function(){
@@ -303,14 +307,15 @@ Game.prototype.gameLoop = function(){
     var data = snapshot.val();
   });
   if (this.firstRun) {
-
     this.audio.start("loop6");
     this.firstRun = false;
   }
+  this.checkState();
+  console.log("game");
   this.clearCanvasAndDisplayDetails();
   if(this.currentLevel.bricks[1].y === this.currentLevel.bricks[1].finalY) {
     this.collide();
-    this.updatePosition();
+    //this.updatePosition();
     this.testWalls();
   }
   this.updateFirebase();
@@ -324,11 +329,6 @@ Game.prototype.gameLoop = function(){
 
 
 Game.prototype.updateFirebase = function(){
-  if (this.localPlayer.player === 1){
-    this.localPlayer.player = "p1";
-  } else if (this.localPlayer.player === 2){
-    this.localPlayer.player = "p2";
-  }
   this.firebase.child('game').child(this.localPlayer.player).update({
     x: this.localPlayer.x,
     y: this.localPlayer.y,
@@ -336,9 +336,6 @@ Game.prototype.updateFirebase = function(){
     isFiring: this.localPlayer.isFiring
   });
 }
-
-
-
 
 Game.prototype.clearCanvasAndDisplayDetails = function(){
   this.c.fillStyle = "#54717A";
@@ -432,14 +429,14 @@ Game.prototype.initApp = function(){
         if(this.getOtherKeyPress.keyCode === 13 && this.introMenu.yMod === 355){
           this.firebase.child('game').update({playerTwo: true});
           this.introMenu.localPlayerSelect = true;
-          this.localPlayer = new Tank(2, 850, 500, this.playerTwo);
-          this.remotePlayer = new Tank(1, 50, 50, this.playerOne);
+          this.localPlayer = new Tank("p2", 850, 500, this.playerTwo);
+          this.remotePlayer = new Tank("p1", 50, 50, this.playerOne);
           //Listens for P1 select
         } else if (this.getOtherKeyPress.keyCode === 13 && this.introMenu.yMod === 285){
           this.firebase.child('game').update({playerOne: true});
           this.introMenu.localPlayerSelect = true;
-          this.localPlayer = new Tank(1, 50, 50, this.playerOne);
-          this.remotePlayer = new Tank(2, 850, 500, this.playerTwo);
+          this.localPlayer = new Tank("p1", 50, 50, this.playerOne);
+          this.remotePlayer = new Tank("p2", 850, 500, this.playerTwo);
         }
         this.getOtherKeyPress = undefined;
       }
@@ -507,7 +504,6 @@ Game.prototype.drawBricks = function(){
 };
 
 Game.prototype.collide = function(){
-
   for (var i = 0; i < this.currentLevel.balls.length; i++) {
     for (var j = 0; j < this.currentLevel.bricks.length; j++) {
       if ( this.checkCollision(this.currentLevel.balls[i],this.currentLevel.bricks[j]) ) { //left and right of ball
@@ -587,7 +583,7 @@ Game.prototype.checkCollision = function(thing1,thing2) {
 Game.prototype.testWalls = function(){
   for (var i = 0, max = this.currentLevel.balls.length; i < max; i = i + 1) {
     if(this.currentLevel.balls[i].y+this.currentLevel.balls[i].h>canvas.height){
-      this.isTheMouseBeingPressed = false;
+      //this.isTheMouseBeingPressed = false;
       this.currentLevel.balls.splice(i,1);
       if (this.currentLevel.balls.length > 0) {
         console.log('it works');
@@ -609,7 +605,6 @@ Game.prototype.testWalls = function(){
   if(this.localPlayer.y > canvas.height-this.localPlayer.h){
     this.localPlayer.y = canvas.height-this.localPlayer.h;
   }
-
   if(this.localPlayer.y < 0){
     this.localPlayer.y = 0;
   }
@@ -668,33 +663,6 @@ Game.prototype.ballCollide = function(){
   }
 };
 
-Game.prototype.updatePosition = function(){
-  for (var i = 0; i < this.currentLevel.balls.length; i++) {
-    if(this.isTheMouseBeingPressed) {
-      this.currentLevel.balls[i].launched = true;
-    }
-    if(this.currentLevel.balls[i].launched === true) {
-      if(this.currentLevel.balls[i].velx > 15){
-        this.currentLevel.balls[i].velx = 15;
-      } else if(this.currentLevel.balls[i].velx < -15){
-        this.currentLevel.balls[i].velx = -15;
-      } else if(this.currentLevel.balls[i].vely > 15){
-        this.currentLevel.balls[i].vely = 15;
-      } else if(this.currentLevel.balls[i].vely < -15){
-        this.currentLevel.balls[i].vely = -15;
-      }
-
-    }
-  }
-  if(this.currentLevel.powerUp.length > 0){
-    this.updatePowerUp();
-    this.drawPowerUp();
-  }
-  if(this.currentLevel.projectiles.length > 0){
-    this.updateProjectile();
-    this.drawProjectiles();
-  }
-};
 Game.prototype.gameOverScreen = function(){
   if (this.firstRun) {
     this.sounds.gameOver.play();
@@ -704,17 +672,17 @@ Game.prototype.gameOverScreen = function(){
   this.c.fillRect(0, 0, canvas.width, canvas.height);
   //Box
   this.c.strokeStyle = '#000000';
-  this.c.font = " "+ canvas.width / 10 + "px serif";
+  this.c.font = " "+ canvas.width / 10 + "px monospace";
   this.c.fillStyle = "#fff";
 
-  if(this.localPlayer.tankLives <= 0) {
-    this.c.fillText ("Blue won!",canvas.width / 4, canvas.height / 2);
-  } else {
-    this.c.fillText ("Red won!",canvas.width / 4, canvas.height / 2);
+  if((this.localPlayer.tankLives <= 0 && this.localPlayer.player==="p1") || (this.remotePlayer.tankLives <= 0 && this.remotePlayer.player==="p1")) {
+    this.c.fillText ("Blue won!",260, canvas.height / 2);
+  } else if((this.localPlayer.tankLives <= 0 && this.localPlayer.player==="p2") || (this.remotePlayer.tankLives <= 0 && this.remotePlayer.player==="p2")) {
+    this.c.fillText ("Red won!",260, canvas.height / 2);
   }
 
-  this.c.font = " "+ canvas.width / 30 + "px serif";
-  this.c.fillText("Click to Return To The Start Menu",canvas.width / 4, canvas.height / 1.5);
+  this.c.font = " "+ canvas.width / 30 + "px monospace";
+  this.c.fillText("Click to Return To The Start Menu",190, canvas.height / 1.5);
   if (this.isTheMouseBeingPressed == true) {
     this.changeStateAndRestartGame();
   }
