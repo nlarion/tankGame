@@ -7,4 +7,5 @@ var Explosion = function () {
   this.h = 50;
   this.x = 50;
   this.y = 50;
+  this.finished = false;
 };
