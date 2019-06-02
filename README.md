@@ -1,7 +1,7 @@
-#Tank
+# Tank
 
-####This is a web project for Tank - a multiplayer tank battle arena written in JavaScript
-####By: Izzy George, Neil Larion, Sean Peerenboom and Will Johnson
+#### This is a web project for Tank - a multiplayer tank battle arena written in JavaScript
+#### By: Izzy George, Neil Larion, Sean Peerenboom and Will Johnson
 
 ## Description
 
