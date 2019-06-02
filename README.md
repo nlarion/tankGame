@@ -5,7 +5,7 @@
 
 ## Description
 
-###This project is lets the user to pick a tank (blue or red) and then battle against another player tank on a different computer over the internet. The project also has the following features:
+### This project is lets the user to pick a tank (blue or red) and then battle against another player tank on a different computer over the internet. The project also has the following features:
 * User can fire "bullets" at the other opposing tank
 * Tanks take damage when fired upon 
 * After three shots a Player's Tank explodes and a winner is declared
