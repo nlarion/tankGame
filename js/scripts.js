@@ -1,4 +1,5 @@
 const STATE_INIT = 10,
+  STATE_LOAD = 15,
   STATE_LOADING = 20,
   STATE_RESET = 30,
   STATE_PLAYING = 40,
@@ -14,54 +15,44 @@ var Game = function(){
   this.tempY = null;
   this.tempRotation = null;
   this.pointImage = new Image();
-  this.appState = STATE_LOADING;
+  this.appState = STATE_LOAD;
   this.isTheMouseBeingPressed = false;
   this.introMenu = {finalX: 475, startX: 1100, textFade: 0, xMod: 270, yMod: 285, playerOneSelect: false, playerTwoSelect: false, localPlayerSelect: false};
-  this.$canvas = $('canvas');
-  this.c = this.$canvas[0].getContext('2d');
+  this.canvas = document.getElementById('canvas');
+  this.c = this.canvas.getContext('2d');
   this.level = 1;
   this.currentLevel = new Level(1);
   this.localPlayer;
+  this.images = [
+    {name:"playerOne", path:"https://raw.githubusercontent.com/nlarion/tankGame/master/images/redtank.png"},
+    {name:"playerTwo", path:"https://raw.githubusercontent.com/nlarion/tankGame/master/images/bluetank.png"},
+    {name:"disabledTank", path:"https://raw.githubusercontent.com/nlarion/tankGame/master/images/disabledtank.png"},
+    {name:"logo", path:"https://raw.githubusercontent.com/nlarion/tankGame/master/images/logo.png"},
+    {name:"explosionImg", path:"https://raw.githubusercontent.com/nlarion/tankGame/master/images/explosion.png"},
+    {name:"heart", path:"https://raw.githubusercontent.com/nlarion/tankGame/master/images/heartSprite.png"},
+  ];
   this.remotePlayer;
   this.explosion = new Explosion();
-  //this.firebase = new Firebase('https://epicodus-tank.firebaseio.com/');
-  this.firebase = new Firebase('https://local-tank.firebaseio.com/');
+  this.firebase = new Firebase('https://epicodus-tank-e6b91-default-rtdb.firebaseio.com/');
 }
 
-Game.prototype.gameManager = function(){
+Game.prototype.gameManager = async function(){
   switch (this.appState) {
   case STATE_INIT:
     this.initApp(); // intro screen
     break;
-  case STATE_LOADING:
+  case STATE_LOAD:
     this.firebase.set({game: 'game'});
     //load assets
     this.audio = new SeamlessLoop();
-    this.audio.addUri('sounds/tankIntro.mp3',33000,"loop2");
-    this.audio.addUri('sounds/tankLoop.mp3',38000, "loop6");
-    this.sounds = {death: new Audio('sounds/deathExplosion.mp3'), death2: new Audio('sounds/howieScream.mp3')};
-    // this.audio = new Audio('sounds/breakoutLoop1.mp3');
-    //playerOne was here
-    this.playerOne = new Image();
-    this.playerTwo = new Image();
-    this.disabledTank = new Image();
-    this.explosionImg = new Image();
-    this.logo = new Image();
-    this.heart = new Image();
-    this.playerOne.src = "images/redtank.png"; // load all assets now so
-    this.playerTwo.src = "images/bluetank.png"; // load all assets now so
-    this.disabledTank.src = "images/disabledtank.png"; // load all assets now so
-
-    this.logo.src = "images/logo.png";
-    this.explosionImg.src = "images/explosion.png";
-    this.heart.src = "images/heartSprite.png";
+    this.audio.addUri('https://raw.githubusercontent.com/nlarion/tankGame/master/sounds/tankIntro.mp3',33000,"loop2");
+    this.audio.addUri('https://raw.githubusercontent.com/nlarion/tankGame/master/sounds/tankLoop.mp3',38000, "loop6");
+    this.sounds = {death: new Audio('https://raw.githubusercontent.com/nlarion/tankGame/master/sounds/deathExplosion.mp3'), death2: new Audio('https://raw.githubusercontent.com/nlarion/tankGame/master/sounds/howieScream.mp3')};
+    // this.audio = new Audio('https://raw.githubusercontent.com/nlarion/tankGame/master/sounds/breakoutLoop1.mp3');
     var t = this;
-    this.$canvas.mousemove(function(e){
-      //maybe you need mouse?
-      //TODO: maybe delete this
-    });
-    this.$canvas.click(function() {
-      t.isTheMouseBeingPressed = true;
+    this.canvas.addEventListener('click',function(e) {
+      console.log(e);
+      this.isTheMouseBeingPressed = true;
     });
     $(window).keypress(function(e){
       t.getKeyPress = e;
@@ -87,7 +78,6 @@ Game.prototype.gameManager = function(){
   case STATE_LOADING_LEVEL:
     this.loadingLevelScreen();
     break;
-
   }
 };
 
@@ -176,7 +166,7 @@ Game.prototype.renderLocalPlayer = function(){
       if(deathSound >= 8){
         this.sounds.death2.play()
       }
-      if (deathSound <=7) {
+      if (deathSound <= 7) {
         this.sounds.death.play();
       }
       this.localPlayer.tankLives -= 1;
@@ -318,6 +308,7 @@ Game.prototype.loadingLevelScreen = function(){
 }
 
 Game.prototype.changeStateAndRestartGame = function(){
+  console.log('changeStateAndRestartGame');
   this.firstRun = true;
   this.isTheMouseBeingPressed = false;
   //this.currentLevel = new Level(1);
@@ -325,7 +316,7 @@ Game.prototype.changeStateAndRestartGame = function(){
   this.audio.stop();
   this.localPlayer = undefined;
   this.remotePlayer = undefined;
-  this.appState = STATE_LOADING;
+  this.appState = STATE_LOAD;
 }
 
 Game.prototype.gameLoop = function(){
@@ -377,13 +368,20 @@ Game.prototype.clearCanvasAndDisplayDetails = function(){
     // this.c.arc((i*20)+70,canvas.height-25,this.currentLevel.balls[0].w/2,0,Math.PI*2,true);
     // this.c.closePath();
     // this.c.fill();
-    // this.c.fillRect((i*20)+60,canvas.height -30,10,10);
+    // this.c.fillRect((i*20)+60,canvas.height -30,10,10);dd
   }
 }
 
 Game.prototype.initApp = function(){
   if (this.firstRun) {
-    this.audio.start("loop2");
+    //TODO: cant just autoplay audio. need to created event listener. this could be better.
+    var t = this;
+    this.canvas.addEventListener('click', function(){
+      t.audio.start("loop2");
+    });
+    document.addEventListener('keydown', function(){
+      t.audio.start("loop2");
+    });
     this.firstRun = false;
   }
 
@@ -708,20 +706,41 @@ Game.prototype.gameOverScreen = function(){
   }
 
   this.c.font = " "+ canvas.width / 30 + "px monospace";
-  this.c.fillText("Click to Return To The Start Menu",190, canvas.height / 1.5);
-  if (this.isTheMouseBeingPressed == true) {
-    this.changeStateAndRestartGame();
-  }
+  this.c.fillText("Click to return to the start menu",190, canvas.height / 1.5);
+
+  var t = this;
+  this.canvas.addEventListener('click', function(){
+    t.changeStateAndRestartGame();
+  });
+  
 }
 
 Game.prototype.runTheGame = function(){
   var t = this;
-  setInterval(function(){t.gameManager();}, 30);
+  var imagePromises = t.images.map(img => {
+    return new Promise((resolve, reject) => {
+      var newImage = new Image();
+      newImage.onload = function(){
+        resolve(newImage);
+      };
+      newImage.onerror = function () {
+        reject(img.path + ' failed to load.');
+      };
+      newImage.src = img.path;
+
+      t[img.name] = newImage;
+
+    });      
+  });
+  Promise.all(imagePromises).then((x)=>
+  {
+    setInterval(function(){t.gameManager();}, 30);
+  });
 };
 
 
 $(function(){
   var game = new Game();
   game.runTheGame();
-  // game.currentLevel.levelConstruct = levels[game.currentLevel.currentLevel-1];
+  //game.currentLevel.levelConstruct = levels[game.currentLevel.currentLevel-1];
 });
